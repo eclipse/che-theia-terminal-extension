@@ -2,7 +2,6 @@ package line_buffer
 
 import (
 	"testing"
-
 	"bytes"
 	"strconv"
 	"strings"

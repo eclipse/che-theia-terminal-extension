@@ -3,13 +3,13 @@ package websocket
 import (
 	"errors"
 	"fmt"
-	execManager "github.com/AndrienkoAleksandr/machine-exec/exec"
+	execManager "github.com/AndrienkoAleksandr/che-theia-terminal-plugin/exec"
 	"github.com/eclipse/che-lib/websocket"
 	"github.com/eclipse/che/agents/go-agents/core/rest"
 	"log"
 	"net/http"
 	"strconv"
-	"github.com/AndrienkoAleksandr/machine-exec/api/model"
+	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/api/model"
 	"time"
 )
 

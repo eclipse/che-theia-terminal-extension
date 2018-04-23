@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	jsonRpcApi "github.com/AndrienkoAleksandr/machine-exec/api/jsonrpc"
-	restApi "github.com/AndrienkoAleksandr/machine-exec/api/rest"
-	"github.com/AndrienkoAleksandr/machine-exec/api/websocket"
+	jsonRpcApi "github.com/AndrienkoAleksandr/che-theia-terminal-plugin/api/jsonrpc"
+	restApi "github.com/AndrienkoAleksandr/che-theia-terminal-plugin/api/rest"
+	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/api/websocket"
 	"github.com/eclipse/che/agents/go-agents/core/jsonrpc"
 	"github.com/eclipse/che/agents/go-agents/core/jsonrpc/jsonrpcws"
 	"github.com/eclipse/che/agents/go-agents/core/rest"

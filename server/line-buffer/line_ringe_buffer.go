@@ -3,7 +3,6 @@ package line_buffer
 import (
 	"container/ring"
 	"bytes"
-
 	"strings"
 	"sync"
 )

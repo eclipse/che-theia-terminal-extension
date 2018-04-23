@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export GOPATH=$PWD
+
 function resolveDependencies() {
     echo "Resolve dependencies"
     go get

@@ -3,14 +3,14 @@ package exec
 import (
 	"errors"
 	"fmt"
-	"github.com/AndrienkoAleksandr/machine-exec/api/model"
+	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/api/model"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"golang.org/x/net/context"
 	"strconv"
 	"sync"
 	"sync/atomic"
-	"github.com/AndrienkoAleksandr/machine-exec/line-buffer"
+	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/line-buffer"
 	"github.com/eclipse/che-lib/websocket"
 )
 

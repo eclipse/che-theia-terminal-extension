@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/docker/docker/api/types"
-	"github.com/AndrienkoAleksandr/machine-exec/line-buffer"
+	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/line-buffer"
 	"github.com/eclipse/che-lib/websocket"
 	"sync"
 	"bytes"
@@ -14,7 +14,7 @@ const (
 	bufferSize = 8192
 )
 
-//todo remove workspace id
+// todo remove workspace id
 type MachineIdentifier struct {
 	MachineName string `json:"machineName"`
 	WsId        string `json:"workspaceId"`
@@ -62,7 +62,7 @@ func (machineExec *MachineExec) getWSConns() []*websocket.Conn {
 	defer machineExec.WsConnsLock.Unlock()
 	machineExec.WsConnsLock.Lock()
 
-	return machineExec.WsConns // todo return copy of the slice
+	return machineExec.WsConns
 }
 
 func (machineExec *MachineExec) Start() {
@@ -77,11 +77,6 @@ func (machineExec *MachineExec) Start() {
 }
 
 func sendClientInputToExec(machineExec *MachineExec) {
-	//defer func() {
-	//	machineExec.Hjr.Conn.Close()
-	//	machineExec.Hjr.Close()
-	//}()
-
 	for {
 		data := <- machineExec.MsgChan
 		if _, err := machineExec.Hjr.Conn.Write(data); err != nil {
@@ -104,7 +99,7 @@ func sendExecOutputToWebsockets(machineExec *MachineExec) {
 			return
 		}
 
-		i, err := normalizeBuffer(&buffer, buf, rbSize) // todo bufio.runeReader
+		i, err := normalizeBuffer(&buffer, buf, rbSize)
 		if err != nil {
 			log.Printf("Couldn't normalize byte buffer to UTF-8 sequence, due to an error: %s", err.Error())
 			return
