@@ -2,6 +2,7 @@
 Terminal exec plugin creates multi-machine terminals for Theia inside Eclipse CHE workspaces. Plugin consist of server
 side located in the "machine-exec-server" directory and client side in the "che-theia-terminal" directory. Server side was written on
 the go-lang and uses docker cli to create terminal connection based on docker exec. Client plugin it's Theia widget written on the typescript.
+Minimal Theia core version to launch plugin: 0.3.8.
 
 # Build machine exec server side binary
 To build machine exec server side uses go-lang version at least 1.10 or higher and docker.
