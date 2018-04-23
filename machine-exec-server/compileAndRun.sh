@@ -2,4 +2,4 @@
 
 source ./compile.sh
 
-./main
+./machine-exec-server

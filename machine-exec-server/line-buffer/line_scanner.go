@@ -1,8 +1,8 @@
 package line_buffer
 
 import (
-	"bytes"
 	"bufio"
+	"bytes"
 )
 
 type LineScanner struct {
@@ -17,7 +17,7 @@ func (lineScanner LineScanner) Text() string { // todo we can use bytes instead 
 	return lineScanner.scanner.Text()
 }
 
-func CreateLineScanner(bts []byte) LineScanner  {
+func CreateLineScanner(bts []byte) LineScanner {
 	scanner := bufio.NewScanner(bytes.NewReader(bts))
 	scanner.Split(scanLinesNoDropCR)
 
@@ -29,7 +29,7 @@ func scanLinesNoDropCR(data []byte, atEOF bool) (advance int, token []byte, err 
 		return 0, nil, nil
 	}
 	if i := bytes.IndexByte(data, '\n'); i >= 0 {
-		return i + 1, data[0:i + 1], nil
+		return i + 1, data[0 : i+1], nil
 	}
 	if atEOF {
 		return len(data), data, nil

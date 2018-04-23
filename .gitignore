@@ -5,4 +5,4 @@ lib
 *-app/*
 !*-app/package.json
 .idea
-/server/main
+/machine-exec-server/machine-exec-server

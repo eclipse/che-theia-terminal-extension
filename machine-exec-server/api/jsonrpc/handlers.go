@@ -2,14 +2,14 @@ package jsonrpc
 
 import (
 	"fmt"
-	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/api/model"
-	execManager "github.com/AndrienkoAleksandr/che-theia-terminal-plugin/exec"
+	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/api/model"
+	execManager "github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/exec"
 	"github.com/eclipse/che/agents/go-agents/core/jsonrpc"
 	"strconv"
 )
 
 type IdParam struct {
-	Id int `json:"id"` //todo maybe string like id, or int64...
+	Id int `json:"id"`
 }
 
 type OperationResult struct {

@@ -1,8 +1,8 @@
 package line_buffer
 
 import (
-	"container/ring"
 	"bytes"
+	"container/ring"
 	"strings"
 	"sync"
 )
@@ -10,12 +10,12 @@ import (
 const lineBufferSize = 1000
 
 type LineRingBuffer struct {
-	ring  *ring.Ring
+	ring *ring.Ring
 	lock *sync.Mutex
 }
 
 func CreateNewLineRingBuffer() LineRingBuffer {
-	return LineRingBuffer{ring.New(lineBufferSize),&sync.Mutex{}}
+	return LineRingBuffer{ring.New(lineBufferSize), &sync.Mutex{}}
 }
 
 func (lineBuff *LineRingBuffer) Write(bts []byte) {
@@ -60,7 +60,7 @@ func (lineBuff *LineRingBuffer) GetContent() string {
 	return buffer.String()
 }
 
-func (lineBuff *LineRingBuffer) shouldContinueLastRing(lastRing *ring.Ring, nextText string) bool  {
+func (lineBuff *LineRingBuffer) shouldContinueLastRing(lastRing *ring.Ring, nextText string) bool {
 	if lastRing == nil || lastRing.Value == nil {
 		return false
 	}

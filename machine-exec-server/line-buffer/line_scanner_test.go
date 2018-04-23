@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestShouldScanTwoLines1(t *testing.T)  {
+func TestShouldScanTwoLines1(t *testing.T) {
 	input := "\ngo"
 	lineBuff := CreateLineScanner([]byte(input))
 
@@ -14,12 +14,12 @@ func TestShouldScanTwoLines1(t *testing.T)  {
 	}
 
 	lineBuff.Scan()
-		if lineBuff.Text() != "go" {
+	if lineBuff.Text() != "go" {
 		t.Error("Failed to parse second line")
 	}
 }
 
-func TestShouldScanTextWithoutCR(t *testing.T)  {
+func TestShouldScanTextWithoutCR(t *testing.T) {
 	input := "to be or not to be"
 	lineBuff := CreateLineScanner([]byte(input))
 
@@ -29,7 +29,7 @@ func TestShouldScanTextWithoutCR(t *testing.T)  {
 	}
 }
 
-func TestShouldScanEmptyContent(t *testing.T)  {
+func TestShouldScanEmptyContent(t *testing.T) {
 	input := ""
 	lineBuff := CreateLineScanner([]byte(input))
 
@@ -39,7 +39,7 @@ func TestShouldScanEmptyContent(t *testing.T)  {
 	}
 }
 
-func TestShouldScanTwoLines2(t *testing.T)  {
+func TestShouldScanTwoLines2(t *testing.T) {
 	input := "foo   bar      baz\n"
 	lineBuff := CreateLineScanner([]byte(input))
 
@@ -54,7 +54,7 @@ func TestShouldScanTwoLines2(t *testing.T)  {
 	}
 }
 
-func TestShouldScanTwoEmptyLines1(t *testing.T)  {
+func TestShouldScanTwoEmptyLines1(t *testing.T) {
 	input := "foo   bar      baz\n\n"
 	lineBuff := CreateLineScanner([]byte(input))
 
@@ -74,7 +74,7 @@ func TestShouldScanTwoEmptyLines1(t *testing.T)  {
 	}
 }
 
-func TestShouldScanTwoEmptyLines2(t *testing.T)  {
+func TestShouldScanTwoEmptyLines2(t *testing.T) {
 	input := "\n\ngo"
 	lineBuff := CreateLineScanner([]byte(input))
 
@@ -94,7 +94,7 @@ func TestShouldScanTwoEmptyLines2(t *testing.T)  {
 	}
 }
 
-func TestShouldScanMultiLineText(t *testing.T)  {
+func TestShouldScanMultiLineText(t *testing.T) {
 	input := "(I´m writing a letter to someone)\n" +
 		"Qué piensas de español?\n" +
 		"Pues...En realidad,\n" +
@@ -132,4 +132,3 @@ func TestShouldScanMultiLineText(t *testing.T)  {
 		t.Error("Failed to parse third line")
 	}
 }
-

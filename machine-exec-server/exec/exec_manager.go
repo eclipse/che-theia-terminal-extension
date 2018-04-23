@@ -3,15 +3,15 @@ package exec
 import (
 	"errors"
 	"fmt"
-	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/api/model"
+	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/api/model"
+	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/line-buffer"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"github.com/eclipse/che-lib/websocket"
 	"golang.org/x/net/context"
 	"strconv"
 	"sync"
 	"sync/atomic"
-	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/line-buffer"
-	"github.com/eclipse/che-lib/websocket"
 )
 
 type MachineExecs struct {
@@ -74,7 +74,7 @@ func Create(machineExec *model.MachineExec) (int, error) {
 	return machineExec.ID, nil
 }
 
-func Check(id int) (int, error)  {
+func Check(id int) (int, error) {
 	machineExec := getById(id)
 	if machineExec == nil {
 		return -1, errors.New("Exec '" + strconv.Itoa(id) + "' was not found")

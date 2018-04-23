@@ -1,14 +1,14 @@
 package jsonrpc
 
 import (
-	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/api/model"
+	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/api/model"
 	"github.com/eclipse/che/agents/go-agents/core/jsonrpc"
 )
 
 // Constants that represent RPC methods identifiers.
 const (
 	CreateMethod = "create"
-	CheckMethod    = "check"
+	CheckMethod  = "check"
 	ResizeMethod = "resize"
 )
 
@@ -33,4 +33,3 @@ var RPCRoutes = jsonrpc.RoutesGroup{
 		},
 	},
 }
-

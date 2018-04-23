@@ -1,13 +1,13 @@
 package model
 
 import (
-	"github.com/docker/docker/api/types"
-	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/line-buffer"
-	"github.com/eclipse/che-lib/websocket"
-	"sync"
 	"bytes"
 	"fmt"
+	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/line-buffer"
+	"github.com/docker/docker/api/types"
+	"github.com/eclipse/che-lib/websocket"
 	"log"
+	"sync"
 )
 
 const (
@@ -30,7 +30,7 @@ type MachineExec struct {
 	// unique client id, real execId should be hidden from client to prevent serialization
 	ID     int `json:"id"`
 	ExecId string
-	Hjr *types.HijackedResponse
+	Hjr    *types.HijackedResponse
 	Buffer line_buffer.LineRingBuffer
 
 	WsConnsLock *sync.Mutex
@@ -53,7 +53,7 @@ func (machineExec *MachineExec) RemoveWebSocket(wsConn *websocket.Conn) {
 
 	for index, wsConnElem := range machineExec.WsConns {
 		if wsConnElem == wsConn {
-			machineExec.WsConns = append(machineExec.WsConns[:index], machineExec.WsConns[index + 1:]...)
+			machineExec.WsConns = append(machineExec.WsConns[:index], machineExec.WsConns[index+1:]...)
 		}
 	}
 }
@@ -78,9 +78,9 @@ func (machineExec *MachineExec) Start() {
 
 func sendClientInputToExec(machineExec *MachineExec) {
 	for {
-		data := <- machineExec.MsgChan
+		data := <-machineExec.MsgChan
 		if _, err := machineExec.Hjr.Conn.Write(data); err != nil {
-			fmt.Println("Failed to write data to exec with id ", machineExec.ID, " Cause: ",  err.Error())
+			fmt.Println("Failed to write data to exec with id ", machineExec.ID, " Cause: ", err.Error())
 			return
 		}
 	}

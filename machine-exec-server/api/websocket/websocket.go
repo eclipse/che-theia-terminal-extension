@@ -3,13 +3,13 @@ package websocket
 import (
 	"errors"
 	"fmt"
-	execManager "github.com/AndrienkoAleksandr/che-theia-terminal-plugin/exec"
+	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/api/model"
+	execManager "github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/exec"
 	"github.com/eclipse/che-lib/websocket"
 	"github.com/eclipse/che/agents/go-agents/core/rest"
 	"log"
 	"net/http"
 	"strconv"
-	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/api/model"
 	"time"
 )
 
@@ -55,7 +55,7 @@ func Attach(w http.ResponseWriter, r *http.Request, restParmas rest.Params) erro
 	return nil
 }
 
-func sendPingMessage(wsConn *websocket.Conn)  {
+func sendPingMessage(wsConn *websocket.Conn) {
 	ticker := time.NewTicker(PingPeriod)
 	defer ticker.Stop()
 

@@ -1,13 +1,13 @@
 package line_buffer
 
 import (
-	"testing"
 	"bytes"
 	"strconv"
 	"strings"
+	"testing"
 )
 
-func writeContentToTheRingBuffAndGetBack(content string) string  {
+func writeContentToTheRingBuffAndGetBack(content string) string {
 	buff := CreateNewLineRingBuffer()
 	buff.Write([]byte(content))
 
@@ -26,7 +26,7 @@ func TestRingBuffShouldCollect5lines(t *testing.T) {
 	}
 }
 
-func TestRingBuffShouldCollectOneLine(t *testing.T)  {
+func TestRingBuffShouldCollectOneLine(t *testing.T) {
 	testLine := "go on"
 
 	backContent := writeContentToTheRingBuffAndGetBack(testLine)
@@ -106,7 +106,7 @@ func TestRingBuffShouldCollectContentWithFewEmptyLines(t *testing.T) {
 	}
 }
 
-func TestRingBufferShouldCollectOnly800Lines(t *testing.T)  {
+func TestRingBufferShouldCollectOnly800Lines(t *testing.T) {
 	content := generateNLines(1011)
 
 	backContent := writeContentToTheRingBuffAndGetBack(content)
@@ -128,7 +128,7 @@ func generateNLines(n int) string {
 	return buffer.String()
 }
 
-func TestRingShouldCollectContentDuringFewWriteOperations(t *testing.T)  {
+func TestRingShouldCollectContentDuringFewWriteOperations(t *testing.T) {
 
 	buff := CreateNewLineRingBuffer()
 
@@ -154,7 +154,7 @@ func TestRingShouldCollectContentDuringFewWriteOperations(t *testing.T)  {
 	}
 }
 
-func TestRingShouldCollectContentDuringFewWriteOperations2(t *testing.T)  {
+func TestRingShouldCollectContentDuringFewWriteOperations2(t *testing.T) {
 
 	buff := CreateNewLineRingBuffer()
 

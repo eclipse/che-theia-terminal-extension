@@ -2,9 +2,8 @@ package main
 
 import (
 	"flag"
-	jsonRpcApi "github.com/AndrienkoAleksandr/che-theia-terminal-plugin/api/jsonrpc"
-	restApi "github.com/AndrienkoAleksandr/che-theia-terminal-plugin/api/rest"
-	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/api/websocket"
+	jsonRpcApi "github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/api/jsonrpc"
+	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/api/websocket"
 	"github.com/eclipse/che/agents/go-agents/core/jsonrpc"
 	"github.com/eclipse/che/agents/go-agents/core/jsonrpc/jsonrpcws"
 	"github.com/eclipse/che/agents/go-agents/core/rest"
@@ -27,7 +26,6 @@ func main() {
 	//todo apply exec-machine context
 
 	appRoutes := []rest.RoutesGroup{
-		restApi.HTTPRoutes,
 		{
 			Name: "Exec-Machine WebSocket routes",
 			Items: []rest.Route{
