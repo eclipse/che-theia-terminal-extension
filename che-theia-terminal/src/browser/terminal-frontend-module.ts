@@ -35,7 +35,6 @@ export default new ContainerModule(bind => {
             child.parent = ctx.container;
             const counter = terminalNum++;
             child.bind(RemoteTerminalWidgetOptions).toConstantValue({
-                // endpoint: { path: terminalsPath },
                 id: 'remote-terminal-' + counter,
                 caption: 'Remote terminal ' + counter,
                 label: 'Remote terminal ' + counter,

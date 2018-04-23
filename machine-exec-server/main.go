@@ -23,8 +23,6 @@ func init() {
 func main() {
 	flag.Parse()
 
-	//todo apply exec-machine context
-
 	appRoutes := []rest.RoutesGroup{
 		{
 			Name: "Exec-Machine WebSocket routes",

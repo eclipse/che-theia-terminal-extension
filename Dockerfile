@@ -25,6 +25,14 @@ ENV PATH ${GOPATH}/bin:/usr/local/go/bin:${PATH}
 
 RUN mkdir -p "${GOPATH}/src" "${GOPATH}/bin" && chmod -R 777 "${GOPATH}"
 
+# go get dependency to cache dependencies and speed up compilation on next rebuild
+RUN go get github.com/eclipse/che-lib/websocket \
+    github.com/docker/docker/api/types \
+    github.com/docker/docker/client \
+    github.com/eclipse/che/agents/go-agents/core/jsonrpc/jsonrpcws \
+    github.com/eclipse/che/agents/go-agents/core/jsonrpc \
+    github.com/eclipse/che/agents/go-agents/core/rest
+
 # use workdirectory
 ENV REPOSITORY=${GOPATH}/src/github.com/AndrienkoAleksandr/che-theia-terminal-plugin
 COPY . ${REPOSITORY}
