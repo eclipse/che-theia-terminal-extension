@@ -1,4 +1,4 @@
 #!/bin/bash
 
-./compile.sh
+../buildBinary.sh
 docker build -t aandrienko/machine-exec .
