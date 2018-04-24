@@ -5,5 +5,7 @@
 # which accompanies this distribution, and is available at
 # http://www.eclipse.org/legal/epl-v10.html
 
+# Build machine exec server binary in the docker container.
+
 docker build -t eclipse/build-machine-exec-server .
 docker run --rm -v ${PWD}/machine-exec-server:/go/bin eclipse/build-machine-exec-server

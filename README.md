@@ -4,16 +4,33 @@ side located in the "machine-exec-server" directory and client side in the "che-
 the go-lang and uses docker cli to create terminal connection based on docker exec. Client plugin it's Theia widget written on the Typescript.
 Minimal Theia core version to launch plugin: 0.3.8.
 
-# Build machine exec server side binary
-To build machine exec server side uses go-lang version at least 1.10 or higher and docker.
-To manage golang dependencies we are using [dep tool](https://github.com/golang/dep).
-To build server side binary you can use buildBinary.sh script.
+# Getting started server side
+To build machine exec server side you need go-lang version at least 1.10 or higher, docker and dep tool.
+
+To install go-lang you can use [installation go-lang guide](https://golang.org/doc/install)
+
+To install docker you can use [installation docker guide](https://docs.docker.com/install)
+
+To manage go-lang dependencies we are using [dep tool](https://github.com/golang/dep).
+To install dep tool you can use [installation dep tool guide](https://golang.github.io/dep/docs/installation.html).
+
+To build server side binary you run buildBinary.sh script:
+    ./buildBinary.sh
+
 Script builds server side binary inside docker container and save binary to the "machine-exec-server" directory.
 
-# Build docker image with machine exec server
-To create docker exec server side docker image you can use machine-exec-server/buildImage.sh script. 
+## Developing server side
+You change server side in the machine-exec server directory. To format code use:
 
-## Getting started
+    go fmt ./...
+    
+To recompile code you can use compile.sh script:
+
+    ./compile.sh
+    
+You can see list used go-lang dependencies in the Gopkg.toml file.
+
+# Getting started client side
 
 Install [nvm](https://github.com/creationix/nvm#install-script).
 
