@@ -56,7 +56,7 @@ export default new ContainerModule(bind => {
                 let workspace = context.container.get(Workspace);
 
                 workspace.findTerminalServer().then(server => {
-                    resolve("ws://localhost:4444");
+                    resolve(server.url);
                 }).catch(err => {
                     console.error("Failed to get remote terminal server api end point url. Cause: ", err);
                     reject(err);

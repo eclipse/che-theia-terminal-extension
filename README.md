@@ -1,10 +1,12 @@
 # Terminal Exec plugin
+
 Terminal exec plugin creates multi-machine terminals for Theia inside Eclipse CHE workspaces. Plugin consist of server
 side located in the "machine-exec-server" directory and client side in the "che-theia-terminal" directory. Server side was written on
 the go-lang and uses docker cli to create terminal connection based on docker exec. Client plugin it's Theia widget written on the Typescript.
 Minimal Theia core version to launch plugin: 0.3.8.
 
 # Getting started server side
+
 To build machine exec server side you need go-lang version at least 1.10 or higher, docker and dep tool.
 
 To install go-lang you can use [installation go-lang guide](https://golang.org/doc/install)
@@ -20,6 +22,7 @@ To build server side binary you run buildBinary.sh script:
 Script builds server side binary inside docker container and save binary to the "machine-exec-server" directory.
 
 ## Developing server side
+
 To format code use command:
 
     go fmt ./...
@@ -65,7 +68,7 @@ Open http://localhost:3000 in the browser.
 
 Start watching of the hello world extension.
 
-    cd theia-docker-exec-terminal-plugin-extension
+    cd che-theia-terminal
     yarn watch
 
 Start watching of the browser example.
@@ -82,7 +85,7 @@ Open http://localhost:3000 in the browser.
 
 Start watching of the hello world extension.
 
-    cd theia-docker-exec-terminal-plugin-extension
+    cd che-theia-terminal
     yarn watch
 
 Start watching of the electron example.
@@ -93,7 +96,7 @@ Start watching of the electron example.
 
 Launch `Start Electron Backend` configuration from VS code.
 
-## Publishing theia-docker-exec-terminal-plugin-extension
+## Publishing che-theia-terminal-plugin
 
 Create a npm user and login to the npm registry, [more on npm publishing](https://docs.npmjs.com/getting-started/publishing-npm-packages).
 

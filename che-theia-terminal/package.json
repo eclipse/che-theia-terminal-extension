@@ -1,5 +1,5 @@
 {
-  "name": "theia-docker-exec-terminal-plugin-extension",
+  "name": "che-theia-terminal",
   "keywords": [
     "theia-extension",
     "terminal"

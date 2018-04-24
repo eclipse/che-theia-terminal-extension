@@ -5,4 +5,6 @@
 # which accompanies this distribution, and is available at
 # http://www.eclipse.org/legal/epl-v10.html
 
-docker run --rm -p 4444:4444 -v /var/run/docker.sock:/var/run/docker.sock aandrienko/machine-exec
+# Build machine exec server binary in the docker container.
+
+docker build -t eclipse/build-machine-exec-server .
