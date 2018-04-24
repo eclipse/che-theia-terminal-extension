@@ -29,7 +29,9 @@ var (
 )
 
 func createDockerClient() *client.Client {
-	cli, err := client.NewClientWithOpts()
+	cli, err := client.NewEnvClient()
+	// set up minimal docker version 1.13.0(api version 1.25).
+	cli.UpdateClientVersion("1.25")
 	if err != nil {
 		panic(err)
 	}
@@ -92,7 +94,7 @@ func Attach(id int) (*model.MachineExec, error) {
 		return machineExec, nil
 	}
 
-	hjr, err := cli.ContainerExecAttach(context.Background(), machineExec.ExecId, types.ExecStartCheck{
+	hjr, err := cli.ContainerExecAttach(context.Background(), machineExec.ExecId, types.ExecConfig{
 		Detach: false,
 		Tty:    machineExec.Tty,
 	})

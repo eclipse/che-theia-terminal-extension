@@ -3,8 +3,8 @@
 echo "===>Begin build machine-exec-server binary<===";
 
 function resolveDependencies() {
-    echo "===>Resolve go-lang dependencies<===";
-    go get
+    echo "===>Resolve go-lang dependencies with help dep tool<===";
+    dep ensure
       if [ $? != 0 ]; then
         echo "Failed to resolve dependencies";
         exit 0;

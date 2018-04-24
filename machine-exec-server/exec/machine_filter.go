@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	WsIdLabel        = "org.eclipse.che.workspace.id"
-	MachineNameLabel = "org.eclipse.che.machine.name"
-	FilterLabelArg   = "label"
+	WsId        = "org.eclipse.che.workspace.id"
+	MachineName = "org.eclipse.che.machine.name"
+	Label       = "label"
 )
 
 // Filter container by labels: wsId and machineName.
@@ -34,11 +34,9 @@ func findMachineContainer(identifier *model.MachineIdentifier) (*types.Container
 }
 
 func createMachineFilter(identifier *model.MachineIdentifier) filters.Args {
-	wsIdCondition := WsIdLabel + "=" + identifier.WsId
-	machineNameCondition := MachineNameLabel + "=" + identifier.MachineName
+	filterArgs := filters.NewArgs()
+	filterArgs.Add(Label, WsId+"="+identifier.WsId)
+	filterArgs.Add(Label, MachineName+"="+identifier.MachineName)
 
-	wsfIdFilterArg := filters.Arg(FilterLabelArg, wsIdCondition)
-	machineNameFilterArg := filters.Arg(FilterLabelArg, machineNameCondition)
-
-	return filters.NewArgs(wsfIdFilterArg, machineNameFilterArg)
+	return filterArgs
 }

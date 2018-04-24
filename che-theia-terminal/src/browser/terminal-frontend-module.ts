@@ -27,7 +27,7 @@ export default new ContainerModule(bind => {
 
     bind(RemoteTerminalWidget).toSelf().inTransientScope();
 
-    var terminalNum = 0;
+    let terminalNum = 0;
     bind(WidgetFactory).toDynamicValue(ctx => ({
         id: REMOTE_TERMINAL_WIDGET_FACTORY_ID,
         createWidget: (options: RemoteTerminalWidgetFactoryOptions) => {
@@ -56,14 +56,14 @@ export default new ContainerModule(bind => {
                 let workspace = context.container.get(Workspace);
 
                 workspace.findTerminalServer().then(server => {
-                    resolve(server.url);
+                    resolve("ws://localhost:4444");
                 }).catch(err => {
                     console.error("Failed to get remote terminal server api end point url. Cause: ", err);
                     reject(err);
                 })
             });
         };
-    })
+    });
 
     bind<TerminalProxyCreatorProvider>("TerminalProxyCreatorProvider").toProvider<TerminalProxyCreator>((context) => {
         return () => {
