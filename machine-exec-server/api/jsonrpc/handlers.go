@@ -2,8 +2,8 @@ package jsonrpc
 
 import (
 	"fmt"
-	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/api/model"
-	execManager "github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/exec"
+	"github.com/eclipse/che-theia-terminal-plugin/machine-exec-server/api/model"
+	execManager "github.com/eclipse/che-theia-terminal-plugin/machine-exec-server/exec"
 	"github.com/eclipse/che/agents/go-agents/core/jsonrpc"
 	"strconv"
 )

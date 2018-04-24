@@ -2,7 +2,7 @@ package exec
 
 import (
 	"errors"
-	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/api/model"
+	"github.com/eclipse/che-theia-terminal-plugin/machine-exec-server/api/model"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	"golang.org/x/net/context"

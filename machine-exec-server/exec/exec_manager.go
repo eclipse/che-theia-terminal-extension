@@ -3,8 +3,8 @@ package exec
 import (
 	"errors"
 	"fmt"
-	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/api/model"
-	"github.com/AndrienkoAleksandr/che-theia-terminal-plugin/machine-exec-server/line-buffer"
+	"github.com/eclipse/che-theia-terminal-plugin/machine-exec-server/api/model"
+	"github.com/eclipse/che-theia-terminal-plugin/machine-exec-server/line-buffer"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/eclipse/che-lib/websocket"
