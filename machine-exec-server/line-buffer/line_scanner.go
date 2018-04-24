@@ -13,7 +13,7 @@ func (lineScanner LineScanner) Scan() bool {
 	return lineScanner.scanner.Scan()
 }
 
-func (lineScanner LineScanner) Text() string { // todo we can use bytes instead of text...
+func (lineScanner LineScanner) Text() string {
 	return lineScanner.scanner.Text()
 }
 

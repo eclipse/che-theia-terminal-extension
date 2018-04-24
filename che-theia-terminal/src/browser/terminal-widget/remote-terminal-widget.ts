@@ -7,7 +7,7 @@
 
 import { inject, injectable } from "inversify";
 import { Disposable, ILogger } from '@theia/core/lib/common';
-import { Widget, BaseWidget, Message, WebSocketConnectionProvider, StatefulWidget, isFirefox } from '@theia/core/lib/browser'; // WebSocketConnectionProvider, StatefulWidget
+import { Widget, BaseWidget, Message, WebSocketConnectionProvider, StatefulWidget, isFirefox } from '@theia/core/lib/browser';
 import * as Xterm from 'xterm';
 import { ThemeService } from "@theia/core/lib/browser/theming";
 import { Deferred } from "@theia/core/lib/common/promise-util";
@@ -23,7 +23,6 @@ export const RemoteTerminalWidgetOptions = Symbol("TerminalWidgetOptions");
 export interface RemoteTerminalWidgetOptions {
     machineName: string,
     workspaceId: string,
-    // endpoint: Endpoint.Options,
     endpoint: string,
     id: string,
     caption: string,

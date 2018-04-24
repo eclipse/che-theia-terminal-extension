@@ -20,15 +20,17 @@ To build server side binary you run buildBinary.sh script:
 Script builds server side binary inside docker container and save binary to the "machine-exec-server" directory.
 
 ## Developing server side
-You change server side in the machine-exec server directory. To format code use:
+To format code use command:
 
     go fmt ./...
-    
+
 To recompile code you can use compile.sh script:
 
     ./compile.sh
-    
-You can see list used go-lang dependencies in the Gopkg.toml file.
+
+You can see list go-lang dependencies in the Gopkg.toml file, source code of this dependencies saved in the "vendor" directory. To manually update this dependencies use:
+
+    dep ensure
 
 # Getting started client side
 

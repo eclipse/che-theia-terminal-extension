@@ -23,7 +23,6 @@ type ResizeParam struct {
 	Rows uint `json:"rows"`
 }
 
-//TODO improvements: todo check casting param is ok...
 func jsonRpcCreateExec(_ *jsonrpc.Tunnel, params interface{}, t jsonrpc.RespTransmitter) {
 	machineExec := params.(*model.MachineExec)
 
@@ -50,7 +49,7 @@ func jsonRpcResizeExec(_ *jsonrpc.Tunnel, params interface{}) (interface{}, erro
 	resizeParam := params.(*ResizeParam)
 
 	if err := execManager.Resize(resizeParam.Id, resizeParam.Cols, resizeParam.Rows); err != nil {
-		return nil, jsonrpc.NewArgsError(err) //todo as jsonRpc error?
+		return nil, jsonrpc.NewArgsError(err)
 	}
 	fmt.Println("Resize with json RPC!")
 
