@@ -6,6 +6,7 @@ Minimal Theia core version to launch plugin: 0.3.8.
 
 # Build machine exec server side binary
 To build machine exec server side uses go-lang version at least 1.10 or higher and docker.
+To manage golang dependencies we are using [dep tool](https://github.com/golang/dep).
 To build server side binary you can use buildBinary.sh script.
 Script builds server side binary inside docker container.
 
