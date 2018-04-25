@@ -35,6 +35,8 @@ RUN mkdir -p "${GOPATH}/src" "${GOPATH}/bin" && chmod -R 777 "${GOPATH}"
 
 RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
-WORKDIR ${GOPATH}/src/github.com/eclipse/che-theia-terminal-plugin/machine-exec-server
+ENV REPO_PATH=${GOPATH}/src/github.com/eclipse/che-theia-terminal-plugin
+COPY . ${REPO_PATH}
+WORKDIR ${REPO_PATH}/machine-exec-server
 
-ENTRYPOINT [ "./compile.sh" ]
+ENTRYPOINT [ "sh", "-c", "./compile.sh && cp machine-exec-server /binary" ]

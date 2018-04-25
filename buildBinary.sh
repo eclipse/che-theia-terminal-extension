@@ -7,5 +7,4 @@
 
 # Build machine exec server binary in the docker container.
 
-ECLIPSE_REPO=github.com/eclipse/che-theia-terminal-plugin
-docker run --rm -v ${PWD}:/go/src/${ECLIPSE_REPO} eclipse/build-machine-exec-server
+docker run --rm -v ${PWD}/machine-exec-server:/binary eclipse/build-machine-exec-server
