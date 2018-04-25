@@ -17,7 +17,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssl \
     git \
     ssh \
-    && rm -rf /var/lib/apt/lists/*
+    sudo && \
+    mkdir /var/run/sshd && \
+    sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
+    echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    useradd -u 1000 -G users,sudo -d /home/user --shell /bin/bash -m user && \
+    usermod -p "*" user
 
 ENV GOLANG_VERSION 1.10
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
@@ -33,10 +38,16 @@ ENV PATH ${GOPATH}/bin:/usr/local/go/bin:${PATH}
 
 RUN mkdir -p "${GOPATH}/src" "${GOPATH}/bin" && chmod -R 777 "${GOPATH}"
 
+RUN mkdir /binary
+
+USER user
+
 RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
 ENV REPO_PATH=${GOPATH}/src/github.com/eclipse/che-theia-terminal-plugin
+RUN mkdir -p ${REPO_PATH}
 COPY . ${REPO_PATH}
 WORKDIR ${REPO_PATH}/machine-exec-server
+RUN sudo chmod -R 777 .
 
-ENTRYPOINT [ "sh", "-c", "./compile.sh && cp machine-exec-server /binary" ]
+ENTRYPOINT [ "sh", "-c", "./compile.sh && cp -rf machine-exec-server /binary" ]
