@@ -16,7 +16,8 @@ To install docker you can use [installation docker guide](https://docs.docker.co
 To manage go-lang dependencies we are using [dep tool](https://github.com/golang/dep).
 To install dep tool you can use [installation dep tool guide](https://golang.github.io/dep/docs/installation.html).
 
-To build server side binary you run buildBinary.sh script:
+To build server side binary you can run buildBinary.sh script:
+
     ./buildBinary.sh
 
 Script builds server side binary inside docker container and save binary to the "machine-exec-server" directory.
