@@ -27,15 +27,15 @@
 
 [[constraint]]
   name = "github.com/docker/docker"
-  version = "v17.03.2-ce"
+  version = "=v17.03.2-ce"
 
 [[constraint]]
   name = "github.com/eclipse/che"
-  version = "6.4.0"
+  version = "=6.4.0"
 
 [[constraint]]
   name = "github.com/eclipse/che-lib"
-  version = "6.4.0"
+  version = "=6.4.0"
 
 [[constraint]]
   branch = "master"
