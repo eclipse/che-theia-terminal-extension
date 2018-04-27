@@ -209,7 +209,7 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
             this.cols = size.cols;
             this.rows = size.rows;
 
-            let resizeParam: ResizeParam = {
+            const resizeParam: ResizeParam = {
                 id: this.terminalId,
                 cols: this.cols,
                 rows: this.rows
@@ -235,7 +235,7 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
         if (id === undefined) {
             console.log("Try to create new terminal!!!");
 
-            let machineExec = {
+            const machineExec = {
                 // todo it would be nice to add field for TERM env variable...
                 identifier: {
                     machineName: this.machineName,
@@ -290,7 +290,7 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
     }
 
     protected createWebSocket(pid: string): WebSocket {
-        let url = this.termEndPoint  + ATTACH_TERMINAL_SEGMENT + "/" + this.terminalId;
+        const url = this.termEndPoint  + ATTACH_TERMINAL_SEGMENT + "/" + this.terminalId;
         return this.webSocketConnectionProvider.createWebSocket(url, { reconnecting: false });
     }
 
@@ -381,7 +381,7 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
 
     private async doResize() {
         await Promise.all([this.waitForResized.promise, this.waitForTermOpened.promise]);
-        const geo = (this.term as any).proposeGeometry();
+        const geo = this.term.proposeGeometry();
         this.cols = geo.cols;
         this.rows = geo.rows - 1; // subtract one row for margin
         this.term.resize(this.cols, this.rows);
