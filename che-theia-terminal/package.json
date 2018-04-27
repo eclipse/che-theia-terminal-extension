@@ -18,7 +18,7 @@
   "dependencies": {
     "@theia/core": "0.3.8",
     "env-variables-extension": "https://github.com/AndrienkoAleksandr/che-theia-env-variables-plugin.git#temp",
-    "xterm": "3.1.0",
+    "xterm": "3.3.0",
     "@eclipse-che/workspace-client": "0.0.1-1523602788"
   },
   "license": "EPL-1.0",
