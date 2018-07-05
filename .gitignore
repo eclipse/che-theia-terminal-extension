@@ -1,0 +1,9 @@
+node_modules
+.browser_modules
+lib
+*.log
+*-app/*
+!*-app/package.json
+.idea
+/machine-exec-server/machine-exec-server
+start.sh

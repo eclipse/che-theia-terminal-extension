@@ -1,0 +1,31 @@
+{
+  "private": true,
+  "name": "electron-app",
+  "version": "0.0.1",
+  "dependencies": {
+    "@theia/editor": "0.3.8",
+    "@theia/filesystem": "0.3.8",
+    "@theia/languages": "0.3.8",
+    "@theia/markers": "0.3.8",
+    "@theia/messages": "0.3.8",
+    "@theia/monaco": "0.3.8",
+    "@theia/navigator": "0.3.8",
+    "@theia/preferences": "0.3.8",
+    "@theia/process": "0.3.8",
+    "@theia/typescript": "0.3.8",
+    "@theia/workspace": "0.3.8",
+    "env-variables-extension": "https://github.com/AndrienkoAleksandr/che-theia-env-variables-plugin.git#temp",
+    "che-theia-terminal": "0.0.1"
+  },
+  "devDependencies": {
+    "@theia/cli": "0.3.8"
+  },
+  "scripts": {
+    "prepare": "theia build",
+    "start": "theia start",
+    "watch": "theia build --watch"
+  },
+  "theia": {
+    "target": "electron"
+  }
+}
