@@ -4,18 +4,17 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
-
-import { inject, injectable } from "inversify";
-import { Disposable, ILogger } from '@theia/core/lib/common';
-import { Widget, BaseWidget, Message, WebSocketConnectionProvider, StatefulWidget, isFirefox } from '@theia/core/lib/browser';
+// Copied from 'terminal-widget.ts' with some modifications, CQ: https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16269
 import * as Xterm from 'xterm';
+import { inject, injectable, named, postConstruct } from "inversify";
+import { Disposable, DisposableCollection, ILogger } from '@theia/core/lib/common';
+import { Widget, BaseWidget, Message, WebSocketConnectionProvider, StatefulWidget, isFirefox } from '@theia/core/lib/browser';
 import { ThemeService } from "@theia/core/lib/browser/theming";
 import { Deferred } from "@theia/core/lib/common/promise-util";
 import { ResizeParam, ATTACH_TERMINAL_SEGMENT, IBaseTerminalServer } from "../server-definition/base-terminal-protocol";
 import { TerminalProxyCreatorProvider, TerminalProxyCreator } from "../server-definition/terminal-proxy-creator";
 
 Xterm.Terminal.applyAddon(require('xterm/lib/addons/fit/fit'));
-Xterm.Terminal.applyAddon(require('xterm/lib/addons/attach/attach'));
 
 export const REMOTE_TERMINAL_WIDGET_FACTORY_ID = 'remote-terminal';
 
@@ -47,6 +46,9 @@ interface TerminalCSSProperties {
 
     /* The background color, as a CSS color string.  */
     background: string;
+
+    /* The color of selections. Bla */
+    // selection: string;
 }
 
 @injectable()
@@ -61,33 +63,29 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
     private termEndPoint: string;
     protected restored = false;
     protected closeOnDispose = true;
-
     protected openAfterShow = false;
     protected isOpeningTerm = false;
     protected isTermOpen = false;
-
-    protected waitForResized = new Deferred<void>();
-    protected waitForTermOpened = new Deferred<void>();
-    protected waitForTermAttached = new Deferred<void>();
-
     protected termServer: IBaseTerminalServer;
 
-    constructor(
-        @inject(WebSocketConnectionProvider) protected readonly webSocketConnectionProvider: WebSocketConnectionProvider,
-        @inject(RemoteTerminalWidgetOptions) protected readonly options: RemoteTerminalWidgetOptions,
-        @inject(ILogger) protected readonly logger: ILogger,
-        @inject("TerminalProxyCreatorProvider") protected readonly termProxyCreatorProvider: TerminalProxyCreatorProvider,
-    ) {
-        super();
-        this.termEndPoint = options.endpoint;
-        this.machineName = options.machineName;
-        this.workspaceId = options.workspaceId;
-        this.id = options.id;
-        this.title.caption = options.caption;
-        this.title.label = options.label;
+    protected readonly waitForResized = new Deferred<void>();
+    protected readonly waitForTermOpened = new Deferred<void>();
+
+    @inject(WebSocketConnectionProvider) protected readonly webSocketConnectionProvider: WebSocketConnectionProvider;
+    @inject(RemoteTerminalWidgetOptions) protected readonly options: RemoteTerminalWidgetOptions;
+    @inject(ILogger) @named('terminal') protected readonly logger: ILogger;
+    @inject("TerminalProxyCreatorProvider") protected readonly termProxyCreatorProvider: TerminalProxyCreatorProvider;
+
+    protected readonly toDisposeOnConnect = new DisposableCollection();
+
+    @postConstruct()
+    protected init(): void {
+        this.id = this.options.id;
+        this.title.caption = this.options.caption;
+        this.title.label = this.options.label;
         this.title.iconClass = "fa fa-terminal";
 
-        if (options.destroyTermOnClose === true) {
+        if (this.options.destroyTermOnClose === true) {
             this.toDispose.push(Disposable.create(() =>
                 this.term.destroy()
             ));
@@ -106,7 +104,8 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
             theme: {
                 foreground: cssProps.foreground,
                 background: cssProps.background,
-                cursor: cssProps.foreground
+                cursor: cssProps.foreground,
+                // selection: cssProps.selection
             },
         });
 
@@ -115,7 +114,8 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
             this.term.setOption('theme', {
                 foreground: changedProps.foreground,
                 background: changedProps.background,
-                cursor: changedProps.foreground
+                cursor: changedProps.foreground,
+                // selection: cssProps.selection
             });
         }));
 
@@ -128,6 +128,8 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
                 (this.term.element.children.item(0) as HTMLElement).style.overflow = 'hidden';
             });
         }
+
+        this.toDispose.push(this.toDisposeOnConnect);
     }
 
     storeState(): object {
@@ -166,7 +168,8 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
         const fontFamily = lookup(htmlElementProps, '--theia-code-font-family');
         const fontSizeStr = lookup(htmlElementProps, '--theia-code-font-size');
         const foreground = lookup(htmlElementProps, '--theia-ui-font-color1');
-        const background = lookup(htmlElementProps, '--theia-layout-color3');
+        const background = lookup(htmlElementProps, '--theia-layout-color0');
+        // const selection = lookup(htmlElementProps, '--theia-transparent-accent-color2');
 
         /* The font size is returned as a string, such as ' 13px').  We want to
            return just the number of px.  */
@@ -185,20 +188,21 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
         }
 
         if (!background.match(colorRe)) {
-            throw new Error(`Unexpected format for --theia-layout-color3 (${background})`);
+            throw new Error(`Unexpected format for --theia-layout-color0 (${background})`);
         }
 
         return {
-            fontSize: fontSize,
-            fontFamily: fontFamily,
-            foreground: foreground,
-            background: background,
+            fontSize,
+            fontFamily,
+            foreground,
+            background,
+            // selection
         };
     }
 
     protected registerResize(): void {
         this.term.on('resize', size => {
-            if (this.terminalId === undefined) {
+            if (typeof this.terminalId !== "number") {
                 return;
             }
 
@@ -214,16 +218,16 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
                 cols: this.cols,
                 rows: this.rows
             };
-            this.waitForTermAttached.promise.then(() => this.termServer.resize(resizeParam));
+            this.termServer.resize(resizeParam);
         });
     }
 
     /**
-     * Create a new remote terminal in the back-end and attach it to a
+     * Create a new shell terminal in the back-end and attach it to a
      * new terminal widget.
      * If id is provided attach to the terminal for this id.
      */
-    public async start(id?: number): Promise<void> {
+    async start(id?: number): Promise<void> {
         await this.waitForResized.promise;
         try {
             const termProxyCreator = <TerminalProxyCreator>await this.termProxyCreatorProvider()
@@ -232,40 +236,29 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
             this.logger.error("Failed to create terminal server proxy. Cause: ", err);
             return;
         }
-        if (id === undefined) {
-            console.log("Try to create new terminal!!!");
-
-            const machineExec = {
-                // todo it would be nice to add field for TERM env variable...
-                identifier: {
-                    machineName: this.machineName,
-                    workspaceId: this.workspaceId
-                },
-                cmd: ["/bin/bash"], //todo maybe without login array ["/bin/bash", "-l"]
-                cols: this.cols,
-                rows: this.rows,
-                tty: true
-            };
-
-            this.terminalId = await this.termServer.create(machineExec);
-            console.log("Created: ", this.terminalId);
-        } else {
-            this.terminalId = await this.termServer.check({id: id});
+        this.terminalId = typeof id !== 'number' ? await this.createTerminal() : await this.attachTerminal(id);
+        if (typeof this.terminalId === "number") {
+            await this.doResize();
+            this.connectTerminalProcess();
         }
+    }
+    protected async attachTerminal(id: number): Promise<number | undefined> {
+        return await this.termServer.check({id: id});
+    }
+    protected async createTerminal(): Promise<number | undefined> {
+        const machineExec = {
+            // todo it would be nice to add field for TERM env variable...
+            identifier: {
+                machineName: this.machineName,
+                workspaceId: this.workspaceId
+            },
+            cmd: ["/bin/bash"], //todo maybe without login array ["/bin/bash", "-l"]
+            cols: this.cols,
+            rows: this.rows,
+            tty: true
+        };
 
-        /* An error has occurred in the backend.  */
-        if (this.terminalId === -1 || this.terminalId === undefined) {
-            this.terminalId = undefined;
-            if (id === undefined) {
-                this.logger.error("Error creating terminal widget, see the backend error log for more information.  ");
-            } else {
-                this.logger.error(`Error attaching to terminal id ${id}, the terminal is most likely gone. Starting up a new terminal instead.  `);
-                this.start();
-            }
-            return;
-        }
-        await this.doResize();
-        this.connectTerminalProcess(this.terminalId);
+        return await this.termServer.create(machineExec);
     }
 
     protected async openTerm(): Promise<void> {
@@ -287,11 +280,6 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
         this.isTermOpen = true;
         this.waitForTermOpened.resolve();
         return this.waitForTermOpened.promise;
-    }
-
-    protected createWebSocket(pid: string): WebSocket {
-        const url = this.termEndPoint  + ATTACH_TERMINAL_SEGMENT + "/" + this.terminalId;
-        return this.webSocketConnectionProvider.createWebSocket(url, { reconnecting: false });
     }
 
     protected onActivateRequest(msg: Message): void {
@@ -345,21 +333,19 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
         }, 50);
     }
 
-    protected connectTerminalProcess(id: number) {
-        this.monitorTerminal(id);
-        this.connectSocket(id);
-    }
-
-    protected monitorTerminal(id: number) {
+    protected connectTerminalProcess(): void {
+        if (typeof this.terminalId !== "number") {
+            return;
+        }
+        this.toDisposeOnConnect.dispose();
+        this.connectSocket(this.terminalId);
     }
 
     protected connectSocket(id: number) {
         const socket = this.createWebSocket(id.toString());
 
         socket.onopen = () => {
-            this.term.attach(socket);
-            this.waitForTermAttached.resolve();
-            this.term._initialized = true;
+            socket.onmessage = ev => this.term.write(ev.data);
         };
 
         socket.onerror = err => {
@@ -370,10 +356,15 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
         ));
     }
 
+    protected createWebSocket(pid: string): WebSocket {
+        const url = this.termEndPoint  + ATTACH_TERMINAL_SEGMENT + "/" + this.terminalId;
+        return this.webSocketConnectionProvider.createWebSocket(url, { reconnecting: false });
+    }
+
     dispose(): void {
         /* Close the backend terminal only when explicitly closing the terminal
          * a refresh for example won't close it.  */
-        if (this.closeOnDispose === true && this.terminalId !== undefined) {
+        if (this.closeOnDispose === true && typeof this.terminalId === "number") {
             // do nothing, server side doesn't support kill exec.
         }
         super.dispose();
