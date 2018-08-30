@@ -11,7 +11,7 @@
 import {
     CommandContribution,
     MenuContribution
-} from "@theia/core/lib/common"; 
+} from "@theia/core/lib/common";
 import { ContainerModule, Container } from "inversify";
 import { WidgetFactory, ApplicationShell, Widget } from '@theia/core/lib/browser';
 import { TerminalQuickOpenService } from "./contribution/terminal-quick-open";
@@ -63,14 +63,14 @@ export default new ContainerModule(bind => {
     bind<TerminalApiEndPointProvider>("TerminalApiEndPointProvider").toProvider<string>((context) => {
         return () => {
             return new Promise<string>((resolve, reject) => {
-                let workspace = context.container.get(Workspace);
+                const workspace = context.container.get(Workspace);
 
                 workspace.findTerminalServer().then(server => {
                     resolve(server.url);
                 }).catch(err => {
                     console.error("Failed to get remote terminal server api end point url. Cause: ", err);
                     reject(err);
-                })
+                });
             });
         };
     });
@@ -78,7 +78,7 @@ export default new ContainerModule(bind => {
     bind<TerminalProxyCreatorProvider>("TerminalProxyCreatorProvider").toProvider<TerminalProxyCreator>((context) => {
         return () => {
             return new Promise<TerminalProxyCreator>((resolve, reject) => {
-                let provider = context.container.get<TerminalApiEndPointProvider>("TerminalApiEndPointProvider");
+                const provider = context.container.get<TerminalApiEndPointProvider>("TerminalApiEndPointProvider");
                 provider().then(url => {
                     context.container.bind("term-api-end-point").toConstantValue(url);
                     resolve(context.container.get(TerminalProxyCreator));
@@ -88,5 +88,5 @@ export default new ContainerModule(bind => {
                 });
             });
         };
-    })
+    });
 });

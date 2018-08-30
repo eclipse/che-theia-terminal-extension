@@ -230,7 +230,7 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
     async start(id?: number): Promise<void> {
         await this.waitForResized.promise;
         try {
-            const termProxyCreator = <TerminalProxyCreator>await this.termProxyCreatorProvider()
+            const termProxyCreator = <TerminalProxyCreator>await this.termProxyCreatorProvider();
             this.termServer = termProxyCreator.create();
         } catch (err) {
             this.logger.error("Failed to create terminal server proxy. Cause: ", err);
@@ -252,7 +252,7 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
                 machineName: this.machineName,
                 workspaceId: this.workspaceId
             },
-            cmd: ["/bin/bash"], //todo maybe without login array ["/bin/bash", "-l"]
+            cmd: ["/bin/bash"], // todo maybe without login array ["/bin/bash", "-l"]
             cols: this.cols,
             rows: this.rows,
             tty: true
