@@ -12,12 +12,12 @@ import { injectable, inject } from "inversify";
 import { CommandContribution, CommandRegistry, MenuContribution, MenuModelRegistry } from "@theia/core/lib/common";
 import { CommonMenus } from "@theia/core/lib/browser";
 
-import { TerminalQuickOpenService } from "./terminal-quick-open"
+import { TerminalQuickOpenService } from "./terminal-quick-open";
 
 export const NewRemoteTerminal = {
     id: 'NewRemoteTerminal',
     label: 'New terminal'
-}
+};
 @injectable()
 export class TheiaDockerExecTerminalPluginCommandContribution implements CommandContribution {
 
@@ -27,7 +27,7 @@ export class TheiaDockerExecTerminalPluginCommandContribution implements Command
 
     registerCommands(registry: CommandRegistry): void {
         registry.registerCommand(NewRemoteTerminal, {
-            execute: () => { 
+            execute: () => {
                 this.terminalQuickOpen.openTerminal();
             }
         });

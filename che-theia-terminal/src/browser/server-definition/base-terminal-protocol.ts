@@ -22,7 +22,7 @@ export interface MachineIdentifier {
 export interface MachineExec {
     identifier: MachineIdentifier,
     cmd: string[],
-    tty:boolean,
+    tty: boolean,
     cols: number,
     rows: number,
     id?: number

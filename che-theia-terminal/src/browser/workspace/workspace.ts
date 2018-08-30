@@ -26,7 +26,7 @@ export class Workspace {
     }
 
     public async getListMachines(): Promise<{ [attrName: string]: IMachine }> {
-        let machineNames: { [attrName: string]: IMachine } = {};
+        const machineNames: { [attrName: string]: IMachine } = {};
         const workspaceId = await this.getWorkspaceId();
         const restClient = await this.getRemoteApi();
         if (!workspaceId || !restClient) {
@@ -44,7 +44,7 @@ export class Workspace {
             .catch((reason: IRequestError) => {
                 console.log("Failed to get workspace by ID: ", workspaceId, "Status code: ", reason.status);
                 reject(reason.message);
-            })
+            });
         });
     }
 
@@ -52,12 +52,18 @@ export class Workspace {
         const machines = await this.getListMachines();
 
         for (const machineName in machines) {
+            if (!machines.hasOwnProperty(machineName)) {
+                continue;
+            }
             const servers = machines[machineName].servers;
             for (const serverName in servers) {
+                if (!servers.hasOwnProperty(serverName)) {
+                    continue;
+                }
                 const attrs = servers[serverName].attributes;
                 if (attrs) {
                     for (const attrName in attrs) {
-                        if (attrName == TYPE && attrs[attrName] == TERMINAL_SERVER_TYPE) {
+                        if (attrName === TYPE && attrs[attrName] === TERMINAL_SERVER_TYPE) {
                             return servers[serverName];
                         }
                     }

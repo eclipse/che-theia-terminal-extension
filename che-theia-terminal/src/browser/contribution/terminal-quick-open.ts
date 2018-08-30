@@ -32,6 +32,9 @@ export class TerminalQuickOpenService {
 
         if (machines) {
             for (const machineName in machines) {
+                if (!machines.hasOwnProperty(machineName)) {
+                    continue;
+                }
                 items.push(new NewTerminalItem(machineName, newTermItemFunc => this.createNewTerminal(newTermItemFunc.machineName)));
             }
         }
@@ -39,7 +42,7 @@ export class TerminalQuickOpenService {
         this.open(items, "Select machine to create new terminal");
     }
 
-    private getOpts(placeholder: string, fuzzyMatchLabel: boolean = true):QuickOpenOptions {
+    private getOpts(placeholder: string, fuzzyMatchLabel: boolean = true): QuickOpenOptions {
         return QuickOpenOptions.resolve({
             placeholder,
             fuzzyMatchLabel,
@@ -61,7 +64,7 @@ export class TerminalQuickOpenService {
 
     protected async createNewTerminal(machineName: string): Promise<void> {
         try {
-            let workspaceId = <string>await this.baseEnvVariablesServer.getEnvValueByKey("CHE_WORKSPACE_ID");
+            const workspaceId = <string>await this.baseEnvVariablesServer.getEnvValueByKey("CHE_WORKSPACE_ID");
             const termApiEndPoint = <string>await this.termApiEndPointProvider();
 
             const widget = <RemoteTerminalWidget>await this.widgetManager.getOrCreateWidget(REMOTE_TERMINAL_WIDGET_FACTORY_ID, <RemoteTerminalWidgetFactoryOptions>{
@@ -71,7 +74,7 @@ export class TerminalQuickOpenService {
                 endpoint: termApiEndPoint
             });
             widget.start();
-        } catch(err) {
+        } catch (err) {
             console.error("Failed to create terminal widget. Cause: ", err);
         }
     }
@@ -88,7 +91,7 @@ export class NewTerminalItem extends QuickOpenItem {
         });
     }
 
-    get machineName():string {
+    get machineName(): string {
         return this._machineName;
     }
 

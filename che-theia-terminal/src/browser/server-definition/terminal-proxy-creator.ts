@@ -19,7 +19,7 @@ export class TerminalProxyCreator {
 
     private server: IBaseTerminalServer;
 
-    constructor(@inject(RemoteWebSocketConnectionProvider) protected readonly connProvider :RemoteWebSocketConnectionProvider,
+    constructor(@inject(RemoteWebSocketConnectionProvider) protected readonly connProvider: RemoteWebSocketConnectionProvider,
                 @inject("term-api-end-point") protected readonly apiEndPoint: string,
             ) {
     }
