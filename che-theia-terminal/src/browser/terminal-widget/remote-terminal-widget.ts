@@ -61,7 +61,7 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
     private term: Xterm.Terminal;
     private cols: number;
     private rows: number;
-    private machineName = "dev-machine";
+    private machineName;
     private workspaceId: string;
     private termEndPoint: string;
     protected restored = false;
@@ -85,6 +85,7 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
     protected init(): void {
         this.id = this.options.id;
         this.workspaceId = this.options.workspaceId;
+        this.machineName = this.options.machineName;
         this.termEndPoint = this.options.endpoint;
         this.title.caption = this.options.caption;
         this.title.label = this.options.label;
