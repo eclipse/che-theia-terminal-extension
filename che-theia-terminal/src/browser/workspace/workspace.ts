@@ -10,7 +10,7 @@
 
 import { injectable, inject } from "inversify";
 import WorkspaceClient, { IWorkspace, IRequestError, IRemoteAPI, IServer, IMachine } from "@eclipse-che/workspace-client";
-import { IBaseEnvVariablesServer } from "env-variables-extension/lib/common/base-env-variables-protocol";
+import { EnvVariablesServer } from '@theia/core/lib/common/env-variables';
 import { TERMINAL_SERVER_TYPE } from "../server-definition/base-terminal-protocol";
 
 const TYPE: string = "type";
@@ -22,7 +22,7 @@ export class Workspace {
 
     private api: IRemoteAPI;
 
-    constructor(@inject(IBaseEnvVariablesServer) protected readonly baseEnvVariablesServer: IBaseEnvVariablesServer) {
+    constructor(@inject(EnvVariablesServer) protected readonly baseEnvVariablesServer: EnvVariablesServer) {
     }
 
     public async getListMachines(): Promise<{ [attrName: string]: IMachine }> {
@@ -32,19 +32,19 @@ export class Workspace {
         if (!workspaceId || !restClient) {
             return machineNames;
         }
-        return new Promise<{ [attrName: string]: IMachine }>( (resolve, reject) => {
+        return new Promise<{ [attrName: string]: IMachine }>((resolve, reject) => {
             restClient.getById<IWorkspace>(workspaceId)
-            .then((workspace: IWorkspace) => {
-                if (workspace.runtime) {
-                    resolve(workspace.runtime.machines);
-                    return;
-                }
-                resolve({});
-            })
-            .catch((reason: IRequestError) => {
-                console.log("Failed to get workspace by ID: ", workspaceId, "Status code: ", reason.status);
-                reject(reason.message);
-            });
+                .then((workspace: IWorkspace) => {
+                    if (workspace.runtime) {
+                        resolve(workspace.runtime.machines);
+                        return;
+                    }
+                    resolve({});
+                })
+                .catch((reason: IRequestError) => {
+                    console.log("Failed to get workspace by ID: ", workspaceId, "Status code: ", reason.status);
+                    reject(reason.message);
+                });
         });
     }
 
@@ -75,11 +75,11 @@ export class Workspace {
     }
 
     public async getWorkspaceId(): Promise<string> {
-        return await this.baseEnvVariablesServer.getEnvValueByKey("CHE_WORKSPACE_ID");
+        return await this.baseEnvVariablesServer.getValue("CHE_WORKSPACE_ID").then(v => v ? v.value : undefined);
     }
 
     public async getWsMasterApiEndPoint(): Promise<string> {
-        return await this.baseEnvVariablesServer.getEnvValueByKey("CHE_API_EXTERNAL");
+        return await this.baseEnvVariablesServer.getValue("CHE_API_EXTERNAL").then(v => v ? v.value : undefined);
     }
 
     private async getRemoteApi(): Promise<IRemoteAPI> {
