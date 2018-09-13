@@ -16,14 +16,13 @@
     "src"
   ],
   "dependencies": {
-    "@theia/core": "0.3.8",
-    "env-variables-extension": "https://github.com/AndrienkoAleksandr/che-theia-env-variables-plugin.git#temp",
+    "@theia/core": "0.3.14",
     "xterm": "3.3.0",
     "@eclipse-che/workspace-client": "0.0.1-1523602788"
   },
   "license": "EPL-2.0",
   "devDependencies": {
-    "typescript": "2.7.2",
+    "typescript": "2.8.4",
     "rimraf": "2.6.2"
   },
   "scripts": {

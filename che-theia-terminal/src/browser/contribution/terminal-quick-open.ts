@@ -11,7 +11,7 @@
 import { injectable, inject } from "inversify";
 import { QuickOpenService, QuickOpenModel, QuickOpenItem } from '@theia/core/lib/browser/quick-open/';
 import { QuickOpenMode, QuickOpenOptions, WidgetManager } from "@theia/core/lib/browser";
-import { IBaseEnvVariablesServer } from "env-variables-extension/lib/common/base-env-variables-protocol";
+import { EnvVariablesServer } from '@theia/core/lib/common/env-variables';
 import { TerminalApiEndPointProvider, Workspace } from "../workspace/workspace";
 import { REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidget, RemoteTerminalWidgetFactoryOptions } from "../terminal-widget/remote-terminal-widget";
 
@@ -19,11 +19,11 @@ import { REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidget, RemoteTerminal
 export class TerminalQuickOpenService {
 
     constructor(@inject(QuickOpenService) private readonly quickOpenService: QuickOpenService,
-                @inject(WidgetManager) private readonly widgetManager: WidgetManager,
-                @inject(IBaseEnvVariablesServer) protected readonly baseEnvVariablesServer: IBaseEnvVariablesServer,
-                @inject("TerminalApiEndPointProvider") protected readonly termApiEndPointProvider: TerminalApiEndPointProvider,
-                @inject(Workspace) protected readonly workspace: Workspace,
-            ) {
+        @inject(WidgetManager) private readonly widgetManager: WidgetManager,
+        @inject(EnvVariablesServer) protected readonly baseEnvVariablesServer: EnvVariablesServer,
+        @inject("TerminalApiEndPointProvider") protected readonly termApiEndPointProvider: TerminalApiEndPointProvider,
+        @inject(Workspace) protected readonly workspace: Workspace,
+    ) {
     }
 
     async openTerminal(): Promise<void> {
@@ -64,7 +64,7 @@ export class TerminalQuickOpenService {
 
     protected async createNewTerminal(machineName: string): Promise<void> {
         try {
-            const workspaceId = <string>await this.baseEnvVariablesServer.getEnvValueByKey("CHE_WORKSPACE_ID");
+            const workspaceId = <string>await this.baseEnvVariablesServer.getValue("CHE_WORKSPACE_ID").then(v => v ? v.value : undefined);
             const termApiEndPoint = <string>await this.termApiEndPointProvider();
 
             const widget = <RemoteTerminalWidget>await this.widgetManager.getOrCreateWidget(REMOTE_TERMINAL_WIDGET_FACTORY_ID, <RemoteTerminalWidgetFactoryOptions>{
@@ -83,9 +83,9 @@ export class TerminalQuickOpenService {
 export class NewTerminalItem extends QuickOpenItem {
 
     constructor(
-                protected readonly _machineName: string,
-                private readonly execute: (item: NewTerminalItem) => void
-            ) {
+        protected readonly _machineName: string,
+        private readonly execute: (item: NewTerminalItem) => void
+    ) {
         super({
             label: _machineName,
         });
