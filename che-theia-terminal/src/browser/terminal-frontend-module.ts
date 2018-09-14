@@ -17,7 +17,7 @@ import { WidgetFactory, ApplicationShell, Widget } from '@theia/core/lib/browser
 import { TerminalQuickOpenService } from "./contribution/terminal-quick-open";
 import { } from './remote';
 import { Workspace, TerminalApiEndPointProvider } from './workspace/workspace';
-import { TheiaDockerExecTerminalPluginCommandContribution, TheiaDockerExecTerminalPluginMenuContribution } from "./contribution/theia-docker-exec-terminal-plugin-contribution";
+import { TheiaDockerExecTerminalPluginContribution } from "./contribution/theia-docker-exec-terminal-plugin-contribution";
 import { RemoteTerminalWidget, REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidgetFactoryOptions, RemoteTerminalWidgetOptions } from "./terminal-widget/remote-terminal-widget";
 import { RemoteWebSocketConnectionProvider } from "./server-definition/remote-connection";
 import { TerminalProxyCreator, TerminalProxyCreatorProvider } from "./server-definition/terminal-proxy-creator";
@@ -27,8 +27,8 @@ import 'xterm/lib/xterm.css';
 
 export default new ContainerModule(bind => {
 
-    bind(CommandContribution).to(TheiaDockerExecTerminalPluginCommandContribution);
-    bind(MenuContribution).to(TheiaDockerExecTerminalPluginMenuContribution);
+    bind(CommandContribution).to(TheiaDockerExecTerminalPluginContribution);
+    bind(MenuContribution).to(TheiaDockerExecTerminalPluginContribution);
 
     bind(TerminalQuickOpenService).toSelf();
     bind(RemoteWebSocketConnectionProvider).toSelf();

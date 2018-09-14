@@ -8,39 +8,47 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-import { injectable, inject } from "inversify";
+import { injectable, inject, postConstruct } from "inversify";
 import { CommandContribution, CommandRegistry, MenuContribution, MenuModelRegistry } from "@theia/core/lib/common";
 import { CommonMenus } from "@theia/core/lib/browser";
 
 import { TerminalQuickOpenService } from "./terminal-quick-open";
+import { TerminalApiEndPointProvider } from "../workspace/workspace";
 
 export const NewRemoteTerminal = {
     id: 'NewRemoteTerminal',
     label: 'New terminal'
 };
-@injectable()
-export class TheiaDockerExecTerminalPluginCommandContribution implements CommandContribution {
 
-    constructor(
-        @inject(TerminalQuickOpenService) private readonly terminalQuickOpen: TerminalQuickOpenService,
-    ) { }
+@injectable()
+export class TheiaDockerExecTerminalPluginContribution implements CommandContribution, MenuContribution {
+
+    @inject(TerminalQuickOpenService)
+    private readonly terminalQuickOpen: TerminalQuickOpenService;
+
+    @inject("TerminalApiEndPointProvider")
+    protected readonly termApiEndPointProvider: TerminalApiEndPointProvider;
+
+    @postConstruct()
+    protected init(): void {
+    }
 
     registerCommands(registry: CommandRegistry): void {
-        registry.registerCommand(NewRemoteTerminal, {
-            execute: () => {
-                this.terminalQuickOpen.openTerminal();
-            }
+        this.termApiEndPointProvider().then(url => {
+            registry.registerCommand(NewRemoteTerminal, {
+                execute: () => {
+                    this.terminalQuickOpen.openTerminal();
+                }
+            });
         });
     }
-}
-
-@injectable()
-export class TheiaDockerExecTerminalPluginMenuContribution implements MenuContribution {
 
     registerMenus(menus: MenuModelRegistry): void {
-        menus.registerMenuAction(CommonMenus.FILE, {
-            commandId: NewRemoteTerminal.id,
-            label: NewRemoteTerminal.label
+        this.termApiEndPointProvider().then(url => {
+            menus.registerMenuAction(CommonMenus.FILE, {
+                commandId: NewRemoteTerminal.id,
+                label: NewRemoteTerminal.label
+            });
         });
     }
 }
