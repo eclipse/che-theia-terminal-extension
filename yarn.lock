@@ -325,6 +325,16 @@
     node-pty "0.7.6"
     string-argv "0.0.2"
 
+"@theia/terminal@0.3.14":
+  version "0.3.14"
+  resolved "https://registry.yarnpkg.com/@theia/terminal/-/terminal-0.3.14.tgz#2c7a1a7816f0c82017c4198fa96175eab63d5780"
+  dependencies:
+    "@theia/core" "^0.3.14"
+    "@theia/filesystem" "^0.3.14"
+    "@theia/process" "^0.3.14"
+    "@theia/workspace" "^0.3.14"
+    xterm "~3.5.0"
+
 "@theia/typescript@0.3.14":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@theia/typescript/-/typescript-0.3.14.tgz#d4ced880b8c5724597dcdc4c938bc1564d8574a9"
@@ -8096,7 +8106,11 @@ xtend@~2.1.1:
 
 xterm@3.3.0:
   version "3.3.0"
-  resolved "https://registry.yarnpkg.com/xterm/-/xterm-3.3.0.tgz#b09a19fc2cd5decd21112e5c9dab0b61991f6cf3"
+  resolved "http://registry.npmjs.org/xterm/-/xterm-3.3.0.tgz#b09a19fc2cd5decd21112e5c9dab0b61991f6cf3"
+
+xterm@~3.5.0:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/xterm/-/xterm-3.5.1.tgz#d2e62ab26108a771b7bd1b7be4f6578fb4aff922"
 
 y18n@^3.2.1:
   version "3.2.1"

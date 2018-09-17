@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "@theia/core": "0.3.14",
+    "@theia/terminal": "0.3.14",
     "xterm": "3.3.0",
     "@eclipse-che/workspace-client": "0.0.1-1523602788"
   },

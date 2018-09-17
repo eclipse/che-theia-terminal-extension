@@ -8,27 +8,24 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-import {
-    CommandContribution,
-    MenuContribution
-} from "@theia/core/lib/common";
-import { ContainerModule, Container } from "inversify";
+import { ContainerModule, Container, interfaces } from "inversify";
 import { WidgetFactory, ApplicationShell, Widget } from '@theia/core/lib/browser';
 import { TerminalQuickOpenService } from "./contribution/terminal-quick-open";
 import { } from './remote';
 import { Workspace, TerminalApiEndPointProvider } from './workspace/workspace';
-import { TheiaDockerExecTerminalPluginCommandContribution, TheiaDockerExecTerminalPluginMenuContribution } from "./contribution/theia-docker-exec-terminal-plugin-contribution";
 import { RemoteTerminalWidget, REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidgetFactoryOptions, RemoteTerminalWidgetOptions } from "./terminal-widget/remote-terminal-widget";
 import { RemoteWebSocketConnectionProvider } from "./server-definition/remote-connection";
 import { TerminalProxyCreator, TerminalProxyCreatorProvider } from "./server-definition/terminal-proxy-creator";
+import { TerminalFrontendContribution } from '@theia/terminal/lib/browser/terminal-frontend-contribution';
+import { ExecTerminalFrontendContribution } from './contribution/exec-terminal-contribution';
 
 import '../../src/browser/terminal-widget/terminal.css';
 import 'xterm/lib/xterm.css';
 
-export default new ContainerModule(bind => {
+export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind)  => {
 
-    bind(CommandContribution).to(TheiaDockerExecTerminalPluginCommandContribution);
-    bind(MenuContribution).to(TheiaDockerExecTerminalPluginMenuContribution);
+    bind(ExecTerminalFrontendContribution).toSelf().inSingletonScope();
+    rebind(TerminalFrontendContribution).toService(ExecTerminalFrontendContribution);
 
     bind(TerminalQuickOpenService).toSelf();
     bind(RemoteWebSocketConnectionProvider).toSelf();
