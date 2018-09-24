@@ -14,7 +14,7 @@ import { Widget, BaseWidget, Message, StatefulWidget, isFirefox } from '@theia/c
 import { ThemeService } from "@theia/core/lib/browser/theming";
 import { Deferred } from "@theia/core/lib/common/promise-util";
 import { ResizeParam, ATTACH_TERMINAL_SEGMENT, IBaseTerminalServer } from "../server-definition/base-terminal-protocol";
-import { TerminalProxyCreatorProvider, TerminalProxyCreator } from "../server-definition/terminal-proxy-creator";
+import { TerminalProxyCreator } from "../server-definition/terminal-proxy-creator";
 import { RemoteWebSocketConnectionProvider } from '../server-definition/remote-connection';
 
 Xterm.Terminal.applyAddon(require('xterm/lib/addons/fit/fit'));
@@ -23,9 +23,6 @@ export const REMOTE_TERMINAL_WIDGET_FACTORY_ID = 'remote-terminal';
 
 export const RemoteTerminalWidgetOptions = Symbol("TerminalWidgetOptions");
 export interface RemoteTerminalWidgetOptions {
-    machineName: string,
-    workspaceId: string,
-    endpoint: string,
     id: string,
     caption: string,
     label: string
@@ -33,8 +30,10 @@ export interface RemoteTerminalWidgetOptions {
 }
 
 export interface RemoteTerminalWidgetFactoryOptions extends Partial<RemoteTerminalWidgetOptions> {
-    /* a unique string per terminal */
-    created: string
+    created?: string,
+    machineName: string,
+    workspaceId: string,
+    endpoint: string,
 }
 
 interface TerminalCSSProperties {
@@ -75,9 +74,9 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
     protected readonly waitForTermOpened = new Deferred<void>();
 
     @inject(RemoteWebSocketConnectionProvider) protected readonly webSocketConnectionProvider: RemoteWebSocketConnectionProvider;
-    @inject(RemoteTerminalWidgetOptions) protected readonly options: RemoteTerminalWidgetOptions;
+    @inject(RemoteTerminalWidgetOptions) protected readonly options: RemoteTerminalWidgetFactoryOptions;
     @inject(ILogger) protected readonly logger: ILogger;
-    @inject("TerminalProxyCreatorProvider") protected readonly termProxyCreatorProvider: TerminalProxyCreatorProvider;
+    @inject(TerminalProxyCreator) protected readonly termProxy: TerminalProxyCreator;
 
     protected readonly toDisposeOnConnect = new DisposableCollection();
 
@@ -235,13 +234,9 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
      */
     async start(id?: number): Promise<void> {
         await this.waitForResized.promise;
-        try {
-            const termProxyCreator = <TerminalProxyCreator>await this.termProxyCreatorProvider();
-            this.termServer = termProxyCreator.create();
-        } catch (err) {
-            this.logger.error("Failed to create terminal server proxy. Cause: ", err);
-            return;
-        }
+
+        this.termServer = this.termProxy.create(this.options.endpoint);
+
         this.terminalId = typeof id !== 'number' ? await this.createTerminal() : await this.attachTerminal(id);
         if (typeof this.terminalId === "number") {
             await this.doResize();

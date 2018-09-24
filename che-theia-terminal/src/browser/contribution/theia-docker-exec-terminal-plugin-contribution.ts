@@ -13,34 +13,61 @@ import { CommandContribution, CommandRegistry, MenuContribution, MenuModelRegist
 import { CommonMenus } from "@theia/core/lib/browser";
 
 import { TerminalQuickOpenService } from "./terminal-quick-open";
+import { CHEWorkspaceService } from "../../common/workspace-service";
+import { TerminalProxyCreator } from "../server-definition/terminal-proxy-creator";
+import { RemoteTerminalWidgetFactoryOptions } from "../terminal-widget/remote-terminal-widget";
+import { IServer } from "@eclipse-che/workspace-client";
 
 export const NewRemoteTerminal = {
     id: 'NewRemoteTerminal',
     label: 'New terminal'
 };
 @injectable()
-export class TheiaDockerExecTerminalPluginCommandContribution implements CommandContribution {
+export class TheiaDockerExecTerminalPluginCommandContribution implements CommandContribution, MenuContribution {
+
+    private termServer: IServer | undefined;
 
     constructor(
-        @inject(TerminalQuickOpenService) private readonly terminalQuickOpen: TerminalQuickOpenService,
+        @inject(TerminalQuickOpenService) protected readonly terminalQuickOpen: TerminalQuickOpenService,
+        @inject(CHEWorkspaceService) protected readonly wsService: CHEWorkspaceService,
+        @inject(TerminalProxyCreator) protected readonly termProxyCreator: TerminalProxyCreator
     ) { }
 
-    registerCommands(registry: CommandRegistry): void {
+    async registerCommands(registry: CommandRegistry): Promise<void> {
+        const termServer = <IServer | undefined>await this.getTerminalServer();
+        if (!termServer) {
+            return;
+        }
+        const workspaceId = await this.wsService.getWorkspaceId();
+
+        const options: RemoteTerminalWidgetFactoryOptions = {
+            endpoint: termServer.url,
+            workspaceId: workspaceId,
+            machineName: "dev-machine"
+        };
         registry.registerCommand(NewRemoteTerminal, {
             execute: () => {
-                this.terminalQuickOpen.openTerminal();
+                this.terminalQuickOpen.openTerminal(options);
             }
         });
     }
-}
 
-@injectable()
-export class TheiaDockerExecTerminalPluginMenuContribution implements MenuContribution {
+    async registerMenus(menus: MenuModelRegistry) {
+        const termServer = await this.getTerminalServer();
+        if (termServer) {
+            menus.registerMenuAction(CommonMenus.FILE, {
+                commandId: NewRemoteTerminal.id,
+                label: NewRemoteTerminal.label
+            });
+        }
+    }
 
-    registerMenus(menus: MenuModelRegistry): void {
-        menus.registerMenuAction(CommonMenus.FILE, {
-            commandId: NewRemoteTerminal.id,
-            label: NewRemoteTerminal.label
-        });
+    private async getTerminalServer(): Promise<IServer | undefined> {
+        if (this.termServer) {
+            return this.termServer;
+        }
+
+        this.termServer = await this.wsService.findTerminalServer();
+        return this.termServer;
     }
 }

@@ -11,31 +11,29 @@
 import { injectable, inject } from "inversify";
 import { QuickOpenService, QuickOpenModel, QuickOpenItem } from '@theia/core/lib/browser/quick-open/';
 import { QuickOpenMode, QuickOpenOptions, WidgetManager } from "@theia/core/lib/browser";
-import { EnvVariablesServer } from '@theia/core/lib/common/env-variables';
-import { TerminalApiEndPointProvider, Workspace } from "../workspace/workspace";
 import { REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidget, RemoteTerminalWidgetFactoryOptions } from "../terminal-widget/remote-terminal-widget";
+import { CHEWorkspaceService } from "../../common/workspace-service";
 
 @injectable()
 export class TerminalQuickOpenService {
 
     constructor(@inject(QuickOpenService) private readonly quickOpenService: QuickOpenService,
         @inject(WidgetManager) private readonly widgetManager: WidgetManager,
-        @inject(EnvVariablesServer) protected readonly baseEnvVariablesServer: EnvVariablesServer,
-        @inject("TerminalApiEndPointProvider") protected readonly termApiEndPointProvider: TerminalApiEndPointProvider,
-        @inject(Workspace) protected readonly workspace: Workspace,
+        @inject(CHEWorkspaceService) protected readonly workspaceService: CHEWorkspaceService,
     ) {
     }
 
-    async openTerminal(): Promise<void> {
+    async openTerminal(options: RemoteTerminalWidgetFactoryOptions): Promise<void> {
         const items: QuickOpenItem[] = [];
-        const machines = await this.workspace.getListMachines();
+        const machines = await this.workspaceService.getListMachines();
 
         if (machines) {
             for (const machineName in machines) {
                 if (!machines.hasOwnProperty(machineName)) {
                     continue;
                 }
-                items.push(new NewTerminalItem(machineName, newTermItemFunc => this.createNewTerminal(newTermItemFunc.machineName)));
+                options.machineName = machineName;
+                items.push(new NewTerminalItem(machineName, () => this.createNewTerminal(options)));
             }
         }
 
@@ -62,17 +60,10 @@ export class TerminalQuickOpenService {
         };
     }
 
-    protected async createNewTerminal(machineName: string): Promise<void> {
+    protected async createNewTerminal(options: RemoteTerminalWidgetFactoryOptions): Promise<void> {
         try {
-            const workspaceId = <string>await this.baseEnvVariablesServer.getValue("CHE_WORKSPACE_ID").then(v => v ? v.value : undefined);
-            const termApiEndPoint = <string>await this.termApiEndPointProvider();
-
-            const widget = <RemoteTerminalWidget>await this.widgetManager.getOrCreateWidget(REMOTE_TERMINAL_WIDGET_FACTORY_ID, <RemoteTerminalWidgetFactoryOptions>{
-                created: new Date().toString(),
-                machineName: machineName,
-                workspaceId: workspaceId,
-                endpoint: termApiEndPoint
-            });
+            options.created = new Date().toString();
+            const widget = <RemoteTerminalWidget>await this.widgetManager.getOrCreateWidget(REMOTE_TERMINAL_WIDGET_FACTORY_ID, options);
             widget.start();
         } catch (err) {
             console.error("Failed to create terminal widget. Cause: ", err);

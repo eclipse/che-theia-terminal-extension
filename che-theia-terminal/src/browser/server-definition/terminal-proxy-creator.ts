@@ -11,8 +11,7 @@
 import { injectable, inject } from "inversify";
 import { RemoteWebSocketConnectionProvider } from "./remote-connection";
 import { IBaseTerminalServer, CONNECT_TERMINAL_SEGMENT } from "./base-terminal-protocol";
-
-export type TerminalProxyCreatorProvider = () => Promise<TerminalProxyCreator>;
+import { CHEWorkspaceService } from "../../common/workspace-service";
 
 @injectable()
 export class TerminalProxyCreator {
@@ -20,14 +19,17 @@ export class TerminalProxyCreator {
     private server: IBaseTerminalServer;
 
     constructor(@inject(RemoteWebSocketConnectionProvider) protected readonly connProvider: RemoteWebSocketConnectionProvider,
-                @inject("term-api-end-point") protected readonly apiEndPoint: string,
+                @inject(CHEWorkspaceService) protected readonly wsService: CHEWorkspaceService
             ) {
     }
 
-    create(): IBaseTerminalServer  {
-        if (!this.server) {
-            this.server = this.connProvider.createProxy<IBaseTerminalServer>(this.apiEndPoint + CONNECT_TERMINAL_SEGMENT);
+    create(termEndPoint: string): IBaseTerminalServer {
+        if (this.server) {
+            return this.server;
         }
+
+        this.server = this.connProvider.createProxy<IBaseTerminalServer>(termEndPoint + CONNECT_TERMINAL_SEGMENT);
+
         return this.server;
     }
 }
