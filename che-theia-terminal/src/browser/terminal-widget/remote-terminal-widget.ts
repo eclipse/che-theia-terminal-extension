@@ -253,7 +253,7 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
                 machineName: this.machineName,
                 workspaceId: this.workspaceId
             },
-            cmd: ["/bin/bash"], // todo maybe without login array ["/bin/bash", "-l"]
+            cmd: ["sh"],
             cols: this.cols,
             rows: this.rows,
             tty: true
