@@ -12,8 +12,9 @@ import { injectable, inject } from "inversify";
 import { QuickOpenService, QuickOpenModel, QuickOpenItem } from '@theia/core/lib/browser/quick-open/';
 import { QuickOpenMode, QuickOpenOptions, WidgetManager } from "@theia/core/lib/browser";
 import { EnvVariablesServer } from '@theia/core/lib/common/env-variables';
-import { TerminalApiEndPointProvider, Workspace } from "../workspace/workspace";
 import { REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidget, RemoteTerminalWidgetFactoryOptions } from "../terminal-widget/remote-terminal-widget";
+import {CHEWorkspaceService} from "../../common/workspace-service";
+import {TerminalApiEndPointProvider} from "../server-definition/terminal-proxy-creator";
 
 @injectable()
 export class TerminalQuickOpenService {
@@ -22,13 +23,13 @@ export class TerminalQuickOpenService {
         @inject(WidgetManager) private readonly widgetManager: WidgetManager,
         @inject(EnvVariablesServer) protected readonly baseEnvVariablesServer: EnvVariablesServer,
         @inject("TerminalApiEndPointProvider") protected readonly termApiEndPointProvider: TerminalApiEndPointProvider,
-        @inject(Workspace) protected readonly workspace: Workspace,
+        @inject(CHEWorkspaceService) protected readonly workspaceService: CHEWorkspaceService,
     ) {
     }
 
     async openTerminal(): Promise<void> {
         const items: QuickOpenItem[] = [];
-        const machines = await this.workspace.getListMachines();
+        const machines = await this.workspaceService.getListMachines();
 
         if (machines) {
             for (const machineName in machines) {

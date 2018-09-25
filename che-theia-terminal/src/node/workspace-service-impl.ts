@@ -9,16 +9,15 @@
  **********************************************************************/
 
 import { injectable, inject } from "inversify";
-import WorkspaceClient, { IWorkspace, IRequestError, IRemoteAPI, IServer, IMachine } from "@eclipse-che/workspace-client";
+import WorkspaceClient, { IRemoteAPI, IWorkspace, IServer, IMachine, IRequestError, IRestAPIConfig } from '@eclipse-che/workspace-client';
 import { EnvVariablesServer } from '@theia/core/lib/common/env-variables';
-import { TERMINAL_SERVER_TYPE } from "../server-definition/base-terminal-protocol";
+import { CHEWorkspaceService } from "../common/workspace-service";
+import { TERMINAL_SERVER_TYPE } from "../browser/server-definition/base-terminal-protocol";
 
 const TYPE: string = "type";
 
-export type TerminalApiEndPointProvider = () => Promise<string>;
-
 @injectable()
-export class Workspace {
+export class CHEWorkspaceServiceImpl implements CHEWorkspaceService {
 
     private api: IRemoteAPI;
 
@@ -48,7 +47,7 @@ export class Workspace {
         });
     }
 
-    public async findTerminalServer(): Promise<IServer> {
+    public async findTerminalServer(): Promise<IServer | undefined> {
         const machines = await this.getListMachines();
 
         for (const machineName in machines) {
@@ -71,23 +70,32 @@ export class Workspace {
             }
         }
 
-        return null;
+        return undefined;
     }
 
-    public async getWorkspaceId(): Promise<string> {
+    public async getWorkspaceId(): Promise<string | undefined> {
         return await this.baseEnvVariablesServer.getValue("CHE_WORKSPACE_ID").then(v => v ? v.value : undefined);
     }
 
-    public async getWsMasterApiEndPoint(): Promise<string> {
+    public async getWsMasterApiEndPoint(): Promise<string | undefined> {
         return await this.baseEnvVariablesServer.getValue("CHE_API_EXTERNAL").then(v => v ? v.value : undefined);
+    }
+
+    private async getMachineToken(): Promise<string> {
+        return await this.baseEnvVariablesServer.getValue("CHE_MACHINE_TOKEN").then(v => v ? v.value : undefined);
     }
 
     private async getRemoteApi(): Promise<IRemoteAPI> {
         if (!this.api) {
+            const machineToken = await this.getMachineToken();
             const baseUrl = await this.getWsMasterApiEndPoint();
-            this.api = WorkspaceClient.getRestApi({
-                baseUrl: baseUrl
-            });
+            const restConfig: IRestAPIConfig = {baseUrl: baseUrl, headers: {}};
+
+            if (machineToken) {
+                restConfig.headers['Authorization'] = "Bearer " + machineToken;
+            }
+
+            this.api = WorkspaceClient.getRestApi(restConfig);
         }
         return this.api;
     }
