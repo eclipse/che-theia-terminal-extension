@@ -29,7 +29,7 @@ export class TerminalQuickOpenService {
 
     async openTerminal(): Promise<void> {
         const items: QuickOpenItem[] = [];
-        const machines = await this.workspaceService.getListMachines();
+        const machines = await this.workspaceService.getMachineList();
 
         if (machines) {
             for (const machineName in machines) {

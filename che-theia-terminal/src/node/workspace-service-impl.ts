@@ -24,7 +24,7 @@ export class CHEWorkspaceServiceImpl implements CHEWorkspaceService {
     constructor(@inject(EnvVariablesServer) protected readonly baseEnvVariablesServer: EnvVariablesServer) {
     }
 
-    public async getListMachines(): Promise<{ [attrName: string]: IMachine }> {
+    public async getMachineList(): Promise<{ [attrName: string]: IMachine }> {
         const machineNames: { [attrName: string]: IMachine } = {};
         const workspaceId = await this.getWorkspaceId();
         const restClient = await this.getRemoteApi();
@@ -48,7 +48,7 @@ export class CHEWorkspaceServiceImpl implements CHEWorkspaceService {
     }
 
     public async findTerminalServer(): Promise<IServer | undefined> {
-        const machines = await this.getListMachines();
+        const machines = await this.getMachineList();
 
         for (const machineName in machines) {
             if (!machines.hasOwnProperty(machineName)) {
