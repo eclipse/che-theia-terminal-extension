@@ -8,12 +8,12 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-import { injectable, inject, postConstruct } from "inversify";
+import { injectable, inject } from "inversify";
 import { CommandContribution, CommandRegistry, MenuContribution, MenuModelRegistry } from "@theia/core/lib/common";
 import { CommonMenus } from "@theia/core/lib/browser";
 
 import { TerminalQuickOpenService } from "./terminal-quick-open";
-import { TerminalApiEndPointProvider } from "../workspace/workspace";
+import {TerminalApiEndPointProvider} from "../server-definition/terminal-proxy-creator";
 
 export const NewRemoteTerminal = {
     id: 'NewRemoteTerminal',
@@ -28,10 +28,6 @@ export class TheiaDockerExecTerminalPluginContribution implements CommandContrib
 
     @inject("TerminalApiEndPointProvider")
     protected readonly termApiEndPointProvider: TerminalApiEndPointProvider;
-
-    @postConstruct()
-    protected init(): void {
-    }
 
     registerCommands(registry: CommandRegistry): void {
         this.termApiEndPointProvider().then(url => {
