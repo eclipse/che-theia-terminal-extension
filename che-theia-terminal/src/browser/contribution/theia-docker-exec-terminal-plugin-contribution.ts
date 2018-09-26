@@ -20,6 +20,7 @@ import { CommonMenus, ApplicationShell } from "@theia/core/lib/browser";
 import { TerminalQuickOpenService } from "./terminal-quick-open";
 import {TerminalApiEndPointProvider} from "../server-definition/terminal-proxy-creator";
 import {BrowserMainMenuFactory} from "@theia/core/lib/browser/menu/browser-menu-plugin";
+import { MenuBar as MenuBarWidget } from '@phosphor/widgets';
 
 export const NewRemoteTerminal = {
     id: 'remote-terminal:new',
@@ -39,7 +40,7 @@ export class TheiaDockerExecTerminalPluginContribution implements CommandContrib
     protected readonly shell: ApplicationShell;
 
     @inject(BrowserMainMenuFactory)
-    protected readonly factory: BrowserMainMenuFactory;
+    protected readonly mainMenuFactory: BrowserMainMenuFactory;
 
     private readonly mainMenuId = 'theia:menubar';
 
@@ -69,18 +70,13 @@ export class TheiaDockerExecTerminalPluginContribution implements CommandContrib
              //
             */
             const widgets = this.shell.getWidgets('top');
-
-            let mainMenuBar;
-            for (let index = 0; index < widgets.length; index++) {
-                const widget = widgets[index];
-                if (widget.id === this.mainMenuId) {
-                    mainMenuBar = widget;
+            widgets.forEach(widget => {
+                if (widget.id === this.mainMenuId && widget instanceof MenuBarWidget) {
+                    widget.dispose();
+                    const newMenu = this.mainMenuFactory.createMenuBar();
+                    this.shell.addWidget(newMenu, { area: 'top' });
                 }
-            }
-
-            mainMenuBar.dispose();
-            const newMenu = this.factory.createMenuBar();
-            this.shell.addWidget(newMenu, { area: 'top' });
+            });
         });
     }
 }
