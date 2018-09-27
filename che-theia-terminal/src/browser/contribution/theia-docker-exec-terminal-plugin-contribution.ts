@@ -66,8 +66,7 @@ export class TheiaDockerExecTerminalPluginContribution implements CommandContrib
              but after that Theia doesn't redraw menu widget, because Theia already rendered ui with older data
              and cached old state.
              So follow we do workaround:
-             find main menu bar widget, destroy it and replace by new one widget with the latest changes. Upstream issue:
-             //
+             find main menu bar widget, destroy it and replace by new one widget with the latest changes.
             */
             const widgets = this.shell.getWidgets('top');
             widgets.forEach(widget => {
