@@ -19,11 +19,11 @@
     "@theia/core": "0.3.14",
     "@theia/terminal": "0.3.14",
     "xterm": "3.3.0",
-    "@eclipse-che/workspace-client": "0.0.1-1523602788"
+    "@eclipse-che/workspace-client": "latest"
   },
   "license": "EPL-2.0",
   "devDependencies": {
-    "typescript": "2.8.4",
+    "typescript": "2.9.2",
     "rimraf": "2.6.2"
   },
   "scripts": {
@@ -34,7 +34,8 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/terminal-frontend-module"
+      "frontend": "lib/browser/terminal-frontend-module",
+      "backend": "lib/node/terminal-backend-module"
     }
   ]
 }

@@ -9,18 +9,17 @@
  **********************************************************************/
 
 import { ContainerModule, Container, interfaces } from "inversify";
-import { WidgetFactory, ApplicationShell, Widget } from '@theia/core/lib/browser';
+import { WidgetFactory, ApplicationShell, Widget, WebSocketConnectionProvider } from '@theia/core/lib/browser';
 import { TerminalQuickOpenService } from "./contribution/terminal-quick-open";
-import { } from './remote';
-import { Workspace, TerminalApiEndPointProvider } from './workspace/workspace';
 import { RemoteTerminalWidget, REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidgetFactoryOptions, RemoteTerminalWidgetOptions } from "./terminal-widget/remote-terminal-widget";
 import { RemoteWebSocketConnectionProvider } from "./server-definition/remote-connection";
-import { TerminalProxyCreator, TerminalProxyCreatorProvider } from "./server-definition/terminal-proxy-creator";
-import { TerminalFrontendContribution } from '@theia/terminal/lib/browser/terminal-frontend-contribution';
-import { ExecTerminalFrontendContribution } from './contribution/exec-terminal-contribution';
+import { TerminalProxyCreator, TerminalProxyCreatorProvider, TerminalApiEndPointProvider } from "./server-definition/terminal-proxy-creator";
 
 import '../../src/browser/terminal-widget/terminal.css';
 import 'xterm/lib/xterm.css';
+import { cheWorkspaceServicePath, CHEWorkspaceService } from "../common/workspace-service";
+import {ExecTerminalFrontendContribution} from "./contribution/exec-terminal-contribution";
+import {TerminalFrontendContribution} from "@theia/terminal/lib/browser/terminal-frontend-contribution";
 
 export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind)  => {
 
@@ -30,7 +29,6 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
     bind(TerminalQuickOpenService).toSelf();
     bind(RemoteWebSocketConnectionProvider).toSelf();
     bind(TerminalProxyCreator).toSelf().inSingletonScope();
-    bind(Workspace).toSelf().inSingletonScope();
 
     bind(RemoteTerminalWidget).toSelf().inTransientScope();
 
@@ -57,12 +55,17 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
         }
     }));
 
+    bind(CHEWorkspaceService).toDynamicValue(ctx => {
+        const provider = ctx.container.get(WebSocketConnectionProvider);
+        return provider.createProxy<CHEWorkspaceService>(cheWorkspaceServicePath);
+    }).inSingletonScope();
+
     bind<TerminalApiEndPointProvider>("TerminalApiEndPointProvider").toProvider<string>((context) => {
         return () => {
             return new Promise<string>((resolve, reject) => {
-                const workspace = context.container.get(Workspace);
+                const workspaceService = context.container.get<CHEWorkspaceService>(CHEWorkspaceService);
 
-                workspace.findTerminalServer().then(server => {
+                workspaceService.findTerminalServer().then(server => {
                     resolve(server.url);
                 }).catch(err => {
                     console.error("Failed to get remote terminal server api end point url. Cause: ", err);

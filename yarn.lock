@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@eclipse-che/workspace-client@0.0.1-1523602788":
-  version "0.0.1-1523602788"
-  resolved "https://registry.yarnpkg.com/@eclipse-che/workspace-client/-/workspace-client-0.0.1-1523602788.tgz#1d61d16c777ad283deccbe304c3ec1ad37c6c4a1"
+"@eclipse-che/workspace-client@latest":
+  version "0.0.1-1527159618"
+  resolved "https://registry.yarnpkg.com/@eclipse-che/workspace-client/-/workspace-client-0.0.1-1527159618.tgz#13803c4c7e0b9cc5339ae165807e1dd7e5739109"
   dependencies:
     axios "0.18.0"
     moxios "git://github.com/stoplightio/moxios#v1.3.0"
@@ -7561,9 +7561,9 @@ typescript-language-server@^0.3.0:
     vscode-languageserver "^4.4.0"
     vscode-uri "^1.0.5"
 
-typescript@2.8.4:
-  version "2.8.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.8.4.tgz#0b1db68e6bdfb0b767fa2ab642136a35b059b199"
+typescript@2.9.2:
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
 
 uglify-es@^3.3.4:
   version "3.3.9"
