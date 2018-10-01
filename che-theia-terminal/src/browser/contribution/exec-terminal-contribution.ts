@@ -44,7 +44,7 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
         this.termApiEndPointProvider().then(url => {
             registry.registerCommand(NewMultiMachineTerminal, {
                 execute: () => {
-                    this.terminalQuickOpen.openTerminal();
+                    this.terminalQuickOpen.displayListMachines();
                 }
             });
         });

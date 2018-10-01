@@ -12,6 +12,6 @@
     "tslint": "5.10.0"
   },
   "workspaces": [
-    "che-theia-terminal", "browser-app", "electron-app"
+    "che-theia-terminal", "browser-app"
   ]
 }

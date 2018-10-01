@@ -15,6 +15,7 @@ import { CHEWorkspaceService } from "../common/workspace-service";
 import { TERMINAL_SERVER_TYPE } from "../browser/server-definition/base-terminal-protocol";
 
 const TYPE: string = "type";
+const EDITOR_SERVER_TYPE: string = "ide";
 
 @injectable()
 export class CHEWorkspaceServiceImpl implements CHEWorkspaceService {
@@ -54,16 +55,49 @@ export class CHEWorkspaceServiceImpl implements CHEWorkspaceService {
             if (!machines.hasOwnProperty(machineName)) {
                 continue;
             }
-            const servers = machines[machineName].servers;
-            for (const serverName in servers) {
-                if (!servers.hasOwnProperty(serverName)) {
-                    continue;
+            const machine = machines[machineName];
+            if (machine) {
+                const servers = machine.servers;
+                for (const serverName in servers) {
+                    if (!servers.hasOwnProperty(serverName)) {
+                        continue;
+                    }
+                    const attrs = servers[serverName].attributes;
+                    if (attrs) {
+                        for (const attrName in attrs) {
+                            if (attrName === TYPE && attrs[attrName] === TERMINAL_SERVER_TYPE) {
+                                return servers[serverName];
+                            }
+                        }
+                    }
                 }
-                const attrs = servers[serverName].attributes;
-                if (attrs) {
-                    for (const attrName in attrs) {
-                        if (attrName === TYPE && attrs[attrName] === TERMINAL_SERVER_TYPE) {
-                            return servers[serverName];
+            }
+
+        }
+
+        return undefined;
+    }
+
+    public async findEditorMachineName(): Promise<string | undefined> {
+        const machines = await this.getMachineList();
+
+        for (const machineName in machines) {
+            if (!machines.hasOwnProperty(machineName)) {
+                continue;
+            }
+            const machine = machines[machineName];
+            if (machine) {
+                const servers = machine.servers;
+                for (const serverName in servers) {
+                    if (!servers.hasOwnProperty(serverName)) {
+                        continue;
+                    }
+                    const attrs = servers[serverName].attributes;
+                    if (attrs) {
+                        for (const attrName in attrs) {
+                            if (attrName === TYPE && attrs[attrName] === EDITOR_SERVER_TYPE) {
+                                return machineName;
+                            }
                         }
                     }
                 }

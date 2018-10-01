@@ -10,29 +10,27 @@
 import * as Xterm from 'xterm';
 import { inject, injectable, postConstruct } from "inversify";
 import { Disposable, DisposableCollection, ILogger } from '@theia/core/lib/common';
-import { Widget, BaseWidget, Message, StatefulWidget, isFirefox } from '@theia/core/lib/browser';
+import { Widget, Message, StatefulWidget, isFirefox } from '@theia/core/lib/browser';
 import { ThemeService } from "@theia/core/lib/browser/theming";
 import { Deferred } from "@theia/core/lib/common/promise-util";
 import { ResizeParam, ATTACH_TERMINAL_SEGMENT, IBaseTerminalServer } from "../server-definition/base-terminal-protocol";
 import { TerminalProxyCreatorProvider, TerminalProxyCreator } from "../server-definition/terminal-proxy-creator";
 import { RemoteWebSocketConnectionProvider } from '../server-definition/remote-connection';
+import { TerminalWidget, TerminalWidgetOptions } from '@theia/terminal/lib/browser/base/terminal-widget';
+import {Event, Emitter } from '@theia/core';
 
 Xterm.Terminal.applyAddon(require('xterm/lib/addons/fit/fit'));
 
 export const REMOTE_TERMINAL_WIDGET_FACTORY_ID = 'remote-terminal';
 
-export const RemoteTerminalWidgetOptions = Symbol("TerminalWidgetOptions");
-export interface RemoteTerminalWidgetOptions {
+export const RemoteTerminalWidgetOptions = Symbol("RemoteTerminalWidgetOptions");
+export interface RemoteTerminalWidgetOptions extends Partial<TerminalWidgetOptions> {
     machineName: string,
     workspaceId: string,
-    endpoint: string,
-    id: string,
-    caption: string,
-    label: string
-    destroyTermOnClose: boolean
+    endpoint: string
 }
 
-export interface RemoteTerminalWidgetFactoryOptions extends Partial<RemoteTerminalWidgetOptions> {
+export interface RemoteTerminalWidgetFactoryOptions extends Partial<TerminalWidgetOptions> {
     /* a unique string per terminal */
     created: string
 }
@@ -55,7 +53,21 @@ interface TerminalCSSProperties {
 }
 
 @injectable()
-export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
+export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidget {
+
+    private readonly onTermDidClose = new Emitter<TerminalWidget>();
+
+    get onTerminalDidClose(): Event<TerminalWidget> {
+        return this.onTermDidClose.event;
+    }
+
+    sendText(text: string): void {
+
+    }
+
+    clearOutput(): void {
+
+    }
 
     private terminalId: number | undefined;
     private term: Xterm.Terminal;
@@ -78,17 +90,17 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
     @inject(RemoteTerminalWidgetOptions) protected readonly options: RemoteTerminalWidgetOptions;
     @inject(ILogger) protected readonly logger: ILogger;
     @inject("TerminalProxyCreatorProvider") protected readonly termProxyCreatorProvider: TerminalProxyCreatorProvider;
+    @inject('terminal-dom-id') public readonly id: string;
 
     protected readonly toDisposeOnConnect = new DisposableCollection();
 
     @postConstruct()
     protected init(): void {
-        this.id = this.options.id;
         this.workspaceId = this.options.workspaceId;
         this.machineName = this.options.machineName;
         this.termEndPoint = this.options.endpoint;
-        this.title.caption = this.options.caption;
-        this.title.label = this.options.label;
+        this.title.caption = this.options.title;
+        this.title.label = this.options.title;
         this.title.iconClass = "fa fa-terminal";
 
         if (this.options.destroyTermOnClose === true) {
@@ -233,7 +245,7 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
      * new terminal widget.
      * If id is provided attach to the terminal for this id.
      */
-    async start(id?: number): Promise<void> {
+    async start(id?: number): Promise<number> {
         await this.waitForResized.promise;
         try {
             const termProxyCreator = <TerminalProxyCreator>await this.termProxyCreatorProvider();
@@ -247,6 +259,7 @@ export class RemoteTerminalWidget extends BaseWidget implements StatefulWidget {
             await this.doResize();
             this.connectTerminalProcess();
         }
+        return this.terminalId;
     }
     protected async attachTerminal(id: number): Promise<number | undefined> {
         return await this.termServer.check({ id: id });

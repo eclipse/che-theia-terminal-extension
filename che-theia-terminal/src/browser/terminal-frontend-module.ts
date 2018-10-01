@@ -9,9 +9,9 @@
  **********************************************************************/
 
 import { ContainerModule, Container, interfaces } from "inversify";
-import { WidgetFactory, ApplicationShell, Widget, WebSocketConnectionProvider } from '@theia/core/lib/browser';
+import { WidgetFactory, WebSocketConnectionProvider } from '@theia/core/lib/browser';
 import { TerminalQuickOpenService } from "./contribution/terminal-quick-open";
-import { RemoteTerminalWidget, REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidgetFactoryOptions, RemoteTerminalWidgetOptions } from "./terminal-widget/remote-terminal-widget";
+import { RemoteTerminalWidget, REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidgetOptions } from "./terminal-widget/remote-terminal-widget";
 import { RemoteWebSocketConnectionProvider } from "./server-definition/remote-connection";
 import { TerminalProxyCreator, TerminalProxyCreatorProvider, TerminalApiEndPointProvider } from "./server-definition/terminal-proxy-creator";
 
@@ -20,38 +20,44 @@ import 'xterm/lib/xterm.css';
 import { cheWorkspaceServicePath, CHEWorkspaceService } from "../common/workspace-service";
 import {ExecTerminalFrontendContribution} from "./contribution/exec-terminal-contribution";
 import {TerminalFrontendContribution} from "@theia/terminal/lib/browser/terminal-frontend-contribution";
+import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
+import { TerminalWidget } from "@theia/terminal/lib/browser/base/terminal-widget";
 
 export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind)  => {
+    bind(RemoteTerminalWidget).toSelf();
+    unbind(TerminalWidget);
+    bind(TerminalWidget).to(RemoteTerminalWidget).inTransientScope();
+
+    bind(TerminalQuickOpenService).toSelf().inSingletonScope();
 
     bind(ExecTerminalFrontendContribution).toSelf().inSingletonScope();
     rebind(TerminalFrontendContribution).toService(ExecTerminalFrontendContribution);
 
-    bind(TerminalQuickOpenService).toSelf();
+    unbind(TerminalService);
+    bind(TerminalService).toService(TerminalQuickOpenService);
+
     bind(RemoteWebSocketConnectionProvider).toSelf();
     bind(TerminalProxyCreator).toSelf().inSingletonScope();
-
-    bind(RemoteTerminalWidget).toSelf().inTransientScope();
 
     let terminalNum = 0;
     bind(WidgetFactory).toDynamicValue(ctx => ({
         id: REMOTE_TERMINAL_WIDGET_FACTORY_ID,
-        createWidget: (options: RemoteTerminalWidgetFactoryOptions) => {
+        createWidget: (options: RemoteTerminalWidgetOptions) => {
             const child = new Container({ defaultScope: 'Singleton' });
             child.parent = ctx.container;
             const counter = terminalNum++;
-            child.bind(RemoteTerminalWidgetOptions).toConstantValue({
-                id: 'remote-terminal-' + counter,
-                caption: 'Remote terminal ' + counter,
-                label: 'Remote terminal ' + counter,
+            const domId = options.id || 'terminal-' + counter;
+
+            const widgetOptions: RemoteTerminalWidgetOptions = {
+                title: 'Remote terminal ' + counter,
+                useServerTitle: true,
                 destroyTermOnClose: true,
                 ...options
-            });
-            const result = <Widget>child.get(RemoteTerminalWidget);
+            };
+            child.bind(RemoteTerminalWidgetOptions).toConstantValue(widgetOptions);
+            child.bind('terminal-dom-id').toConstantValue(domId);
 
-            const shell = ctx.container.get(ApplicationShell);
-            shell.addWidget(result, { area: 'bottom' });
-            shell.activateWidget(result.id);
-            return result;
+            return child.get(RemoteTerminalWidget);
         }
     }));
 
