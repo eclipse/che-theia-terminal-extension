@@ -43,7 +43,6 @@ export class TerminalQuickOpenService implements TerminalService {
 
         if (editorMachine) {
             const termWidget = await this.createNewTerminal(editorMachine, options);
-            this.activateTerminal(termWidget);
             return termWidget;
         }
 
@@ -107,7 +106,7 @@ export class TerminalQuickOpenService implements TerminalService {
         } catch (err) {
             console.error("Failed to create terminal widget. Cause: ", err);
         }
-        // todo throw error
+        throw new Error('Unable to create new terminal for machine: ' + machineName);
     }
 }
 

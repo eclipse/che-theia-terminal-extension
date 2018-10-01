@@ -47,27 +47,12 @@ interface TerminalCSSProperties {
 
     /* The background color, as a CSS color string.  */
     background: string;
-
-    /* The color of selections. Bla */
-    // selection: string;
 }
 
 @injectable()
 export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidget {
 
     private readonly onTermDidClose = new Emitter<TerminalWidget>();
-
-    get onTerminalDidClose(): Event<TerminalWidget> {
-        return this.onTermDidClose.event;
-    }
-
-    sendText(text: string): void {
-
-    }
-
-    clearOutput(): void {
-
-    }
 
     private terminalId: number | undefined;
     private term: Xterm.Terminal;
@@ -93,6 +78,7 @@ export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidg
     @inject('terminal-dom-id') public readonly id: string;
 
     protected readonly toDisposeOnConnect = new DisposableCollection();
+    protected waitForConnection: Deferred<WebSocket> | undefined;
 
     @postConstruct()
     protected init(): void {
@@ -123,7 +109,6 @@ export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidg
                 foreground: cssProps.foreground,
                 background: cssProps.background,
                 cursor: cssProps.foreground,
-                // selection: cssProps.selection
             },
         });
 
@@ -132,8 +117,7 @@ export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidg
             this.term.setOption('theme', {
                 foreground: changedProps.foreground,
                 background: changedProps.background,
-                cursor: changedProps.foreground,
-                // selection: cssProps.selection
+                cursor: changedProps.foreground
             });
         }));
 
@@ -148,6 +132,7 @@ export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidg
         }
 
         this.toDispose.push(this.toDisposeOnConnect);
+        this.toDispose.push(this.onTermDidClose);
     }
 
     storeState(): object {
@@ -214,7 +199,6 @@ export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidg
             fontFamily,
             foreground,
             background,
-            // selection
         };
     }
 
@@ -246,17 +230,14 @@ export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidg
      * If id is provided attach to the terminal for this id.
      */
     async start(id?: number): Promise<number> {
-        await this.waitForResized.promise;
         try {
             const termProxyCreator = <TerminalProxyCreator>await this.termProxyCreatorProvider();
             this.termServer = termProxyCreator.create();
         } catch (err) {
-            this.logger.error("Failed to create terminal server proxy. Cause: ", err);
-            return;
+            throw new Error("Failed to create terminal server proxy. Cause: " + err);
         }
         this.terminalId = typeof id !== 'number' ? await this.createTerminal() : await this.attachTerminal(id);
         if (typeof this.terminalId === "number") {
-            await this.doResize();
             this.connectTerminalProcess();
         }
         return this.terminalId;
@@ -266,7 +247,6 @@ export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidg
     }
     protected async createTerminal(): Promise<number | undefined> {
         const machineExec = {
-            // todo it would be nice to add field for TERM env variable...
             identifier: {
                 machineName: this.machineName,
                 workspaceId: this.workspaceId
@@ -361,6 +341,7 @@ export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidg
     }
 
     protected connectSocket(id: number) {
+        const waitForConnection = this.waitForConnection = new Deferred<WebSocket>();
         const socket = this.createWebSocket(id.toString());
 
         socket.onopen = () => {
@@ -374,6 +355,23 @@ export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidg
         this.toDispose.push(Disposable.create(() =>
             socket.close()
         ));
+        if (waitForConnection) {
+            waitForConnection.resolve(socket);
+        }
+    }
+
+    get onTerminalDidClose(): Event<TerminalWidget> {
+        return this.onTermDidClose.event;
+    }
+
+    sendText(text: string): void {
+        if (this.waitForConnection) {
+            this.waitForConnection.promise.then(socket => socket.send(text));
+        }
+    }
+
+    clearOutput(): void {
+        this.term.clear();
     }
 
     protected createWebSocket(pid: string): WebSocket {
@@ -385,7 +383,9 @@ export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidg
         /* Close the backend terminal only when explicitly closing the terminal
          * a refresh for example won't close it.  */
         if (this.closeOnDispose === true && typeof this.terminalId === "number") {
-            // do nothing, server side doesn't support kill exec.
+            // server side doesn't support kill exec.
+            this.onTermDidClose.fire(this);
+            this.onTermDidClose.dispose();
         }
         super.dispose();
     }
