@@ -72,7 +72,11 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
                 const workspaceService = context.container.get<CHEWorkspaceService>(CHEWorkspaceService);
 
                 workspaceService.findTerminalServer().then(server => {
-                    resolve(server.url);
+                    if (server) {
+                        resolve(server.url);
+                    } else {
+                        reject("Unable to find che-machine-exec workspace machine.");
+                    }
                 }).catch(err => {
                     console.error("Failed to get remote terminal server api end point url. Cause: ", err);
                     reject(err);
