@@ -14,8 +14,8 @@ import { CommonMenus, ApplicationShell, KeybindingRegistry } from "@theia/core/l
 
 import { TerminalQuickOpenService } from "./terminal-quick-open";
 import { TerminalFrontendContribution } from "@theia/terminal/lib/browser/terminal-frontend-contribution";
-import {TerminalApiEndPointProvider} from "../server-definition/terminal-proxy-creator";
-import {BrowserMainMenuFactory} from "@theia/core/lib/browser/menu/browser-menu-plugin";
+import { TerminalApiEndPointProvider } from "../server-definition/terminal-proxy-creator";
+import { BrowserMainMenuFactory } from "@theia/core/lib/browser/menu/browser-menu-plugin";
 import { MenuBar as MenuBarWidget } from '@phosphor/widgets';
 
 export const NewMultiMachineTerminal = {

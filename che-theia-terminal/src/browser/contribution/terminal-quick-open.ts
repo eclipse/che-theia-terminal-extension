@@ -39,10 +39,19 @@ export class TerminalQuickOpenService implements TerminalService {
     }
 
     async newTerminal(options: TerminalWidgetOptions): Promise<TerminalWidget> {
-        const editorMachine = await this.workspaceService.findEditorMachineName();
+        let machineName;
 
-        if (editorMachine) {
-            const termWidget = await this.createNewTerminal(editorMachine, options);
+        // todo remove casting when attributes will be merged to plugin-ext.
+        if ((options as any).attributes) {
+            machineName = (options as any).attributes["CHE_MACHINE_NAME"];
+        }
+
+        if (!machineName) {
+            machineName = await this.workspaceService.findEditorMachineName();
+        }
+
+        if (machineName) {
+            const termWidget = await this.createNewTerminal(machineName, options);
             return termWidget;
         }
 
