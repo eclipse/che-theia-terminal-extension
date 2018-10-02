@@ -254,7 +254,8 @@ export class RemoteTerminalWidget extends TerminalWidget implements StatefulWidg
             cmd: ["sh"],
             cols: this.cols,
             rows: this.rows,
-            tty: true
+            tty: true,
+            env: this.options.env
         };
 
         return await this.termServer.create(machineExec);
