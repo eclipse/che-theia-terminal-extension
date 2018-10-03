@@ -28,7 +28,8 @@
             "env": {
                 "NODE_ENV": "development",
                 "CHE_WORKSPACE_ID": "",
-                "CHE_API_EXTERNAL": ""
+                "CHE_API_EXTERNAL": "",
+                "CHE_MACHINE_TOKEN": ""
             },
             "sourceMaps": true,
             "outFiles": [

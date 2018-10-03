@@ -72,7 +72,6 @@ export class TerminalQuickOpenService implements TerminalService {
                     const termWidget = await this.createNewTerminal(newTermItemFunc.machineName);
                     this.activateTerminal(termWidget);
                     termWidget.start();
-                    console.log('start from displayListMachines');
                 }));
             }
         }
