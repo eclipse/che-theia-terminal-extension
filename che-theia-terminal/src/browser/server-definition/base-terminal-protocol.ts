@@ -8,7 +8,9 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-// todo apply context to the server side
+import { injectable } from "inversify";
+import { TerminalWatcher } from "@theia/terminal/lib/common/terminal-watcher";
+import { IBaseTerminalClient, IBaseTerminalExitEvent, IBaseTerminalErrorEvent } from "@theia/terminal/lib/common/base-terminal-protocol";
 
 export const TERMINAL_SERVER_TYPE = "terminal";
 export const CONNECT_TERMINAL_SEGMENT = "/connect";
@@ -37,9 +39,25 @@ export interface ResizeParam extends IdParam {
     cols: number
 }
 
-export const IBaseTerminalServer = Symbol('IBaseTerminalServer');
-export interface IBaseTerminalServer {
+export const RemoteTerminalServer = Symbol('RemoteTerminalServer');
+export interface RemoteTerminalServer {
     create(machineExec: MachineExec): Promise<number>;
     check(id: IdParam): Promise<number>;
     resize(resizeParam: ResizeParam): Promise<void>;
+}
+
+/**
+ * For now this class it's a stub. Real implementation depends on
+ * https://github.com/eclipse/che-machine-exec/issues/5
+ */
+@injectable()
+export class RemoteTerminaWatcher extends TerminalWatcher {
+    getTerminalClient(): IBaseTerminalClient {
+        return {
+            onTerminalExitChanged(event: IBaseTerminalExitEvent) {
+            },
+            onTerminalError(event: IBaseTerminalErrorEvent) {
+            }
+        };
+    }
 }

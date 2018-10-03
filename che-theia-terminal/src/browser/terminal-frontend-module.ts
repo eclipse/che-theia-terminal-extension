@@ -11,7 +11,7 @@
 import { ContainerModule, Container, interfaces } from "inversify";
 import { WidgetFactory, WebSocketConnectionProvider } from '@theia/core/lib/browser';
 import { TerminalQuickOpenService } from "./contribution/terminal-quick-open";
-import { RemoteTerminalWidget, REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidgetOptions } from "./terminal-widget/remote-terminal-widget";
+import { RemoteTerminalWidgetOptions, REMOTE_TERMINAL_WIDGET_FACTORY_ID } from "./terminal-widget/remote-terminal-widget";
 import { RemoteWebSocketConnectionProvider } from "./server-definition/remote-connection";
 import { TerminalProxyCreator, TerminalProxyCreatorProvider, TerminalApiEndPointProvider } from "./server-definition/terminal-proxy-creator";
 
@@ -21,9 +21,11 @@ import { cheWorkspaceServicePath, CHEWorkspaceService } from "../common/workspac
 import {ExecTerminalFrontendContribution} from "./contribution/exec-terminal-contribution";
 import {TerminalFrontendContribution} from "@theia/terminal/lib/browser/terminal-frontend-contribution";
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
-import { TerminalWidget } from "@theia/terminal/lib/browser/base/terminal-widget";
+import { TerminalWidget, TerminalWidgetOptions } from "@theia/terminal/lib/browser/base/terminal-widget";
+import { RemoteTerminalWidget } from "./terminal-widget/remote-terminal-widget";
 
 export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind)  => {
+
     bind(RemoteTerminalWidget).toSelf();
     unbind(TerminalWidget);
     bind(TerminalWidget).to(RemoteTerminalWidget).inTransientScope();
@@ -54,6 +56,7 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
                 destroyTermOnClose: true,
                 ...options
             };
+            child.bind(TerminalWidgetOptions).toConstantValue(widgetOptions);
             child.bind(RemoteTerminalWidgetOptions).toConstantValue(widgetOptions);
             child.bind('terminal-dom-id').toConstantValue(domId);
 

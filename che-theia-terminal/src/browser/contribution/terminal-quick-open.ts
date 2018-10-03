@@ -12,11 +12,12 @@ import { injectable, inject } from "inversify";
 import { QuickOpenService, QuickOpenModel, QuickOpenItem } from '@theia/core/lib/browser/quick-open/';
 import { QuickOpenMode, QuickOpenOptions, WidgetManager, ApplicationShell } from "@theia/core/lib/browser";
 import { EnvVariablesServer } from '@theia/core/lib/common/env-variables';
-import { REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidget, RemoteTerminalWidgetFactoryOptions } from "../terminal-widget/remote-terminal-widget";
+import { REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidgetFactoryOptions } from "../terminal-widget/remote-terminal-widget";
 import {CHEWorkspaceService} from "../../common/workspace-service";
 import {TerminalApiEndPointProvider} from "../server-definition/terminal-proxy-creator";
 import {TerminalService} from "@theia/terminal/lib/browser/base/terminal-service";
 import {TerminalWidget, TerminalWidgetOptions} from "@theia/terminal/lib/browser/base/terminal-widget";
+import { RemoteTerminalWidget } from "../terminal-widget/remote-terminal-widget";
 
 @injectable()
 export class TerminalQuickOpenService implements TerminalService {
@@ -41,7 +42,7 @@ export class TerminalQuickOpenService implements TerminalService {
     async newTerminal(options: TerminalWidgetOptions): Promise<TerminalWidget> {
         let machineName;
 
-        // todo remove casting when attributes will be merged to plugin-ext.
+        // todo remove rude casting when will be used theia 0.3.16.
         if ((options as any).attributes) {
             machineName = (options as any).attributes["CHE_MACHINE_NAME"];
         }
