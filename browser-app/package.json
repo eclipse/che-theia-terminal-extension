@@ -3,7 +3,9 @@
   "name": "browser-app",
   "version": "0.0.1",
   "dependencies": {
+    "@theia/core": "0.3.14",
     "@theia/editor": "0.3.14",
+    "@theia/extension-manager": "0.3.14",
     "@theia/filesystem": "0.3.14",
     "@theia/languages": "0.3.14",
     "@theia/markers": "0.3.14",
@@ -14,6 +16,9 @@
     "@theia/process": "0.3.14",
     "@theia/typescript": "0.3.14",
     "@theia/workspace": "0.3.14",
+    "@theia/plugin-ext": "0.3.14",
+    "@theia/plugin-ext-vscode": "0.3.14",
+    "@theia/terminal": "0.3.14",
     "che-theia-terminal": "0.0.1"
   },
   "devDependencies": {

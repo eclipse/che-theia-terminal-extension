@@ -9,26 +9,22 @@
  **********************************************************************/
 
 import { injectable, inject } from "inversify";
-import {
-    CommandContribution,
-    CommandRegistry,
-    MenuContribution,
-    MenuModelRegistry
-} from "@theia/core/lib/common";
-import { CommonMenus, ApplicationShell } from "@theia/core/lib/browser";
+import { CommandRegistry, MenuModelRegistry } from "@theia/core/lib/common";
+import { CommonMenus, ApplicationShell, KeybindingRegistry } from "@theia/core/lib/browser";
 
 import { TerminalQuickOpenService } from "./terminal-quick-open";
-import {TerminalApiEndPointProvider} from "../server-definition/terminal-proxy-creator";
-import {BrowserMainMenuFactory} from "@theia/core/lib/browser/menu/browser-menu-plugin";
+import { TerminalFrontendContribution } from "@theia/terminal/lib/browser/terminal-frontend-contribution";
+import { TerminalApiEndPointProvider } from "../server-definition/terminal-proxy-creator";
+import { BrowserMainMenuFactory } from "@theia/core/lib/browser/menu/browser-menu-plugin";
 import { MenuBar as MenuBarWidget } from '@phosphor/widgets';
 
-export const NewRemoteTerminal = {
+export const NewMultiMachineTerminal = {
     id: 'remote-terminal:new',
-    label: 'New multi-machine terminal'
+    label: 'Open new multi-machine terminal'
 };
 
 @injectable()
-export class TheiaDockerExecTerminalPluginContribution implements CommandContribution, MenuContribution {
+export class ExecTerminalFrontendContribution extends TerminalFrontendContribution {
 
     @inject(TerminalQuickOpenService)
     private readonly terminalQuickOpen: TerminalQuickOpenService;
@@ -46,9 +42,9 @@ export class TheiaDockerExecTerminalPluginContribution implements CommandContrib
 
     registerCommands(registry: CommandRegistry): void {
         this.termApiEndPointProvider().then(url => {
-            registry.registerCommand(NewRemoteTerminal, {
+            registry.registerCommand(NewMultiMachineTerminal, {
                 execute: () => {
-                    this.terminalQuickOpen.openTerminal();
+                    this.terminalQuickOpen.displayListMachines();
                 }
             });
         });
@@ -57,8 +53,8 @@ export class TheiaDockerExecTerminalPluginContribution implements CommandContrib
     registerMenus(menus: MenuModelRegistry): void {
         this.termApiEndPointProvider().then(url => {
             menus.registerMenuAction(CommonMenus.FILE, {
-                commandId: NewRemoteTerminal.id,
-                label: NewRemoteTerminal.label
+                commandId: NewMultiMachineTerminal.id,
+                label: NewMultiMachineTerminal.label
             });
 
             /*
@@ -75,6 +71,15 @@ export class TheiaDockerExecTerminalPluginContribution implements CommandContrib
                     const newMenu = this.mainMenuFactory.createMenuBar();
                     this.shell.addWidget(newMenu, { area: 'top' });
                 }
+            });
+        });
+    }
+
+    registerKeybindings(keybindings: KeybindingRegistry): void {
+        this.termApiEndPointProvider().then(() => {
+            keybindings.registerKeybinding({
+                command: NewMultiMachineTerminal.id,
+                keybinding: 'ctrl+`'
             });
         });
     }

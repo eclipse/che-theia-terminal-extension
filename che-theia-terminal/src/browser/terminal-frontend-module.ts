@@ -8,53 +8,59 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-import {
-    CommandContribution,
-    MenuContribution
-} from "@theia/core/lib/common";
-import { ContainerModule, Container } from "inversify";
-import { WidgetFactory, ApplicationShell, Widget, WebSocketConnectionProvider } from '@theia/core/lib/browser';
+import { ContainerModule, Container, interfaces } from "inversify";
+import { WidgetFactory, WebSocketConnectionProvider } from '@theia/core/lib/browser';
 import { TerminalQuickOpenService } from "./contribution/terminal-quick-open";
-import { TheiaDockerExecTerminalPluginContribution } from "./contribution/theia-docker-exec-terminal-plugin-contribution";
-import { RemoteTerminalWidget, REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidgetFactoryOptions, RemoteTerminalWidgetOptions } from "./terminal-widget/remote-terminal-widget";
+import { RemoteTerminalWidgetOptions, REMOTE_TERMINAL_WIDGET_FACTORY_ID } from "./terminal-widget/remote-terminal-widget";
 import { RemoteWebSocketConnectionProvider } from "./server-definition/remote-connection";
 import { TerminalProxyCreator, TerminalProxyCreatorProvider, TerminalApiEndPointProvider } from "./server-definition/terminal-proxy-creator";
 
 import '../../src/browser/terminal-widget/terminal.css';
 import 'xterm/lib/xterm.css';
 import { cheWorkspaceServicePath, CHEWorkspaceService } from "../common/workspace-service";
+import {ExecTerminalFrontendContribution} from "./contribution/exec-terminal-contribution";
+import {TerminalFrontendContribution} from "@theia/terminal/lib/browser/terminal-frontend-contribution";
+import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
+import { TerminalWidget, TerminalWidgetOptions } from "@theia/terminal/lib/browser/base/terminal-widget";
+import { RemoteTerminalWidget } from "./terminal-widget/remote-terminal-widget";
 
-export default new ContainerModule(bind => {
+export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind)  => {
 
-    bind(CommandContribution).to(TheiaDockerExecTerminalPluginContribution);
-    bind(MenuContribution).to(TheiaDockerExecTerminalPluginContribution);
+    bind(RemoteTerminalWidget).toSelf();
+    unbind(TerminalWidget);
+    bind(TerminalWidget).to(RemoteTerminalWidget).inTransientScope();
 
-    bind(TerminalQuickOpenService).toSelf();
+    bind(TerminalQuickOpenService).toSelf().inSingletonScope();
+
+    bind(ExecTerminalFrontendContribution).toSelf().inSingletonScope();
+    rebind(TerminalFrontendContribution).toService(ExecTerminalFrontendContribution);
+
+    unbind(TerminalService);
+    bind(TerminalService).toService(TerminalQuickOpenService);
+
     bind(RemoteWebSocketConnectionProvider).toSelf();
     bind(TerminalProxyCreator).toSelf().inSingletonScope();
-
-    bind(RemoteTerminalWidget).toSelf().inTransientScope();
 
     let terminalNum = 0;
     bind(WidgetFactory).toDynamicValue(ctx => ({
         id: REMOTE_TERMINAL_WIDGET_FACTORY_ID,
-        createWidget: (options: RemoteTerminalWidgetFactoryOptions) => {
+        createWidget: (options: RemoteTerminalWidgetOptions) => {
             const child = new Container({ defaultScope: 'Singleton' });
             child.parent = ctx.container;
             const counter = terminalNum++;
-            child.bind(RemoteTerminalWidgetOptions).toConstantValue({
-                id: 'remote-terminal-' + counter,
-                caption: 'Remote terminal ' + counter,
-                label: 'Remote terminal ' + counter,
+            const domId = options.id || 'terminal-' + counter;
+
+            const widgetOptions: RemoteTerminalWidgetOptions = {
+                title: 'Remote terminal ' + counter,
+                useServerTitle: true,
                 destroyTermOnClose: true,
                 ...options
-            });
-            const result = <Widget>child.get(RemoteTerminalWidget);
+            };
+            child.bind(TerminalWidgetOptions).toConstantValue(widgetOptions);
+            child.bind(RemoteTerminalWidgetOptions).toConstantValue(widgetOptions);
+            child.bind('terminal-dom-id').toConstantValue(domId);
 
-            const shell = ctx.container.get(ApplicationShell);
-            shell.addWidget(result, { area: 'bottom' });
-            shell.activateWidget(result.id);
-            return result;
+            return child.get(RemoteTerminalWidget);
         }
     }));
 
@@ -69,7 +75,11 @@ export default new ContainerModule(bind => {
                 const workspaceService = context.container.get<CHEWorkspaceService>(CHEWorkspaceService);
 
                 workspaceService.findTerminalServer().then(server => {
-                    resolve(server.url);
+                    if (server) {
+                        resolve(server.url);
+                    } else {
+                        reject("Unable to find che-machine-exec workspace machine.");
+                    }
                 }).catch(err => {
                     console.error("Failed to get remote terminal server api end point url. Cause: ", err);
                     reject(err);
