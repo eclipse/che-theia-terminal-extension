@@ -17,6 +17,7 @@ import { RemoteWebSocketConnectionProvider } from "../server-definition/remote-c
 import { Deferred } from "@theia/core/lib/common/promise-util";
 import { Disposable } from "vscode-jsonrpc";
 import { TerminalWidgetOptions } from "@theia/terminal/lib/browser/base/terminal-widget";
+import URI from "@theia/core/lib/common/uri";
 
 export const REMOTE_TERMINAL_WIDGET_FACTORY_ID = 'remote-terminal';
 export const RemoteTerminalWidgetOptions = Symbol("RemoteTerminalWidgetOptions");
@@ -91,8 +92,8 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
     }
 
     protected createWebSocket(pid: string): WebSocket {
-        const url = this.options.endpoint + ATTACH_TERMINAL_SEGMENT + "/" + this.terminalId;
-        return this.remoteWebSocketConnectionProvider.createWebSocket(url);
+        const url = new URI(this.options.endpoint).resolve(ATTACH_TERMINAL_SEGMENT).resolve(this.terminalId + '');
+        return this.remoteWebSocketConnectionProvider.createWebSocket(url.toString());
     }
 
     protected async attachTerminal(id: number): Promise<number | undefined> {
