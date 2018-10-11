@@ -142,7 +142,7 @@
 "@theia/application-manager@^0.3.14":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@theia/application-manager/-/application-manager-0.3.14.tgz#e0ccbbb61aadcffd17ab7a6457b1e89e01501bf2"
-  integrity sha512-sv1d+Gkxb8Mmubn3gTx0OjOEqbLi+k22cb+22aJwEAcslVivyRrXz2dcybki/wQX0LSEjkmJZ3akLlcVQG1p8g==
+  integrity sha512-qWV+kdCpW+M6RLEbQHmcd/2utMOAVTH95ZANA3rT/jjE6kPEOhwlt2zpnhHSO75G7K+AQH/iefZZSwLy6/bRnA==
   dependencies:
     "@theia/application-package" "^0.3.14"
     bunyan "^1.8.10"
@@ -166,7 +166,7 @@
 "@theia/application-package@^0.3.14":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@theia/application-package/-/application-package-0.3.14.tgz#0d615ebf6240defdfc87ead6501cbfeadc6c4d73"
-  integrity sha512-ycSmbOLkAjueEcPvT8HVQ4TJF9020aDFZYU3KN7Wju19mOJ4/Rvam0r8Ff/nmt/UAf9SYfrNwTuhgpH6ohrHig==
+  integrity sha512-zasAacUp182q5fvpnS84pUeJk+wo8rIopUOgQ4W8UvTh7xpM6YmbqaFQgR+5ODuMs3ZCHJeR8Pd7gh5HvUSZAA==
   dependencies:
     "@types/fs-extra" "^4.0.2"
     "@types/request" "^2.0.3"
@@ -181,7 +181,7 @@
 "@theia/callhierarchy@^0.3.14":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@theia/callhierarchy/-/callhierarchy-0.3.14.tgz#e3add28d689d97d4b1be4654be8e06399021a665"
-  integrity sha512-2jtUJ+TzWscZk+nbteke+G7R0+9DAhzY5Q8UlOzVwwciGYVJcNUINg+5gd54dMfPUy6I9sk4cflRCvz7u6Wknw==
+  integrity sha512-T05N9yjGNusYKpkqljbevNduWVZfLxImWQjJEw50iEcJIkHH1E8djSVGHb7YhOW1/7NsCUPdpGgf0v8cYHrLwQ==
   dependencies:
     "@theia/core" "^0.3.14"
     "@theia/editor" "^0.3.14"
@@ -324,7 +324,7 @@
 "@theia/monaco@0.3.14", "@theia/monaco@^0.3.14":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@theia/monaco/-/monaco-0.3.14.tgz#ea09155e536b59ef976ef1087fea61780863c061"
-  integrity sha512-fpbnZkP6fuIxKdQic5atnZgsutbd6Nc3S3Bi26InDallaROXsmDkBjswg86g7B0A0UWiZNpXPENTkXLJ2VVOfA==
+  integrity sha512-QgppnglIWR9eLjb6zVq7dZCxoXNXMBzQsvTomg65vgttzM9QgCPpfQAdwJqbya58yCbcfRFDU1W2BFNz2DfcBg==
   dependencies:
     "@theia/core" "^0.3.14"
     "@theia/editor" "^0.3.14"
@@ -351,14 +351,14 @@
 "@theia/outline-view@^0.3.14":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@theia/outline-view/-/outline-view-0.3.14.tgz#fb8e45bdd95b08b0c1d45c3b0258c645026376e6"
-  integrity sha512-rDMWwLIM2tM/JxbZihlTLzRyXOTCXtMg4bwNObpS7MFUHmcjnFda5vboQRT6Vwv28F3bLNd7Vot2sdmOCGwO+A==
+  integrity sha512-eCZB+dmlcDEeqyJlRZ1+pAPVtRXXjx/pyf2MiUVHZgvXDJ6Olgq2ZqsPuYrHkVzblzOGs1XylML1kPz+oYJ0Ww==
   dependencies:
     "@theia/core" "^0.3.14"
 
 "@theia/output@^0.3.14":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@theia/output/-/output-0.3.14.tgz#f474077021ba2df340d176da0d0b246e886894cf"
-  integrity sha512-A/j4govpHLCXK47ReRH/hy7h1nFxGjQjsiYSYUVNMrDj1i1Bc0hg8aoTw4LDK5G5xT86l5lAdde+qjvXwE2VFA==
+  integrity sha512-nQrfLO7F8M72F2TiJuanRyPv/qnX/Fe4/ZQDZXV837lkqW5qrfwP/uPXBYxJnGZb1xza1hK/ImUh/3GyP3CeRg==
   dependencies:
     "@theia/core" "^0.3.14"
 
@@ -388,7 +388,7 @@
 "@theia/plugin@^0.3.14":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@theia/plugin/-/plugin-0.3.14.tgz#c87b224112025bcacfb2b7cd2b8c97331894b352"
-  integrity sha512-4kqmRd5cYUy7ZQcgeNOoPUGcfRyYUdHhO2o+MAAqSZtY/EM7RUO1XYVRfqnu6q20QHtEMYMM1azMNwN34t8CHQ==
+  integrity sha512-2t6D3qZzHArIhxlaSTxcZ1DKt44QZyjBuUfl7kjSNQvc2PFXbHHqbQDgj4vQQlYBzfwwgokCyHad7FpdXE/3Ig==
 
 "@theia/preferences@0.3.14":
   version "0.3.14"
@@ -439,7 +439,7 @@
 "@theia/userstorage@^0.3.14":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@theia/userstorage/-/userstorage-0.3.14.tgz#a4471f05fcbdc40c89f6fd9753aa342be6d27962"
-  integrity sha512-5X3XZRRLq7d7li689CiNdtBlmIo6mFXfr1Z4X79FYYxmMhpNhJr0E73uw9jk5CCSgu5YekQZpQ/bbRut8fIVLA==
+  integrity sha512-AOmVJ50EgyKX9hibWT/C9pVW0BYB4++XPYtg4kl4Lvmorp/snBe0+nuKAJl4cC+IBFpG77KxM3HstewEqSDHJQ==
   dependencies:
     "@theia/core" "^0.3.14"
     "@theia/filesystem" "^0.3.14"
@@ -447,7 +447,7 @@
 "@theia/variable-resolver@^0.3.14":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@theia/variable-resolver/-/variable-resolver-0.3.14.tgz#5faa05860518f92e647bb1e165616c9cb93382e8"
-  integrity sha512-dcFmx2ZdSy3mrp5SPillbtK3AhyKBLaVWH0lsVonMLNMPsz7KwM3I7vIr9LWggyySMKRujqjpQBtaSsSP7h6KA==
+  integrity sha512-X2sX5ojkyn+Oo47AvueSxuqD5NueaJqe3g5rHRN0BwvfdYmc52w5FOL/MsIZGBwnR2I6VDjm1F0NDOqJ982kcw==
   dependencies:
     "@theia/core" "^0.3.14"
 

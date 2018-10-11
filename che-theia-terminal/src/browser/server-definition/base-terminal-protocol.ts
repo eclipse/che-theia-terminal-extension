@@ -13,8 +13,8 @@ import { TerminalWatcher } from "@theia/terminal/lib/common/terminal-watcher";
 import { IBaseTerminalClient, IBaseTerminalExitEvent, IBaseTerminalErrorEvent } from "@theia/terminal/lib/common/base-terminal-protocol";
 
 export const TERMINAL_SERVER_TYPE = "terminal";
-export const CONNECT_TERMINAL_SEGMENT = "/connect";
-export const ATTACH_TERMINAL_SEGMENT = "/attach";
+export const CONNECT_TERMINAL_SEGMENT = "connect";
+export const ATTACH_TERMINAL_SEGMENT = "attach";
 
 export interface MachineIdentifier {
     machineName: string,
