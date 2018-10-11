@@ -51,7 +51,7 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
             const domId = options.id || 'terminal-' + counter;
 
             const widgetOptions: RemoteTerminalWidgetOptions = {
-                title: 'Remote terminal ' + counter,
+                title: options.machineName + ' terminal ' + counter,
                 useServerTitle: true,
                 destroyTermOnClose: true,
                 ...options
