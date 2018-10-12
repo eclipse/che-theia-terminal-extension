@@ -9,7 +9,7 @@
  **********************************************************************/
 
 import { ContainerModule, Container, interfaces } from "inversify";
-import { WidgetFactory, WebSocketConnectionProvider } from '@theia/core/lib/browser';
+import { WidgetFactory, WebSocketConnectionProvider, KeybindingContext } from '@theia/core/lib/browser';
 import { TerminalQuickOpenService } from "./contribution/terminal-quick-open";
 import { RemoteTerminalWidgetOptions, REMOTE_TERMINAL_WIDGET_FACTORY_ID } from "./terminal-widget/remote-terminal-widget";
 import { RemoteWebSocketConnectionProvider } from "./server-definition/remote-connection";
@@ -23,8 +23,10 @@ import {TerminalFrontendContribution} from "@theia/terminal/lib/browser/terminal
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
 import { TerminalWidget, TerminalWidgetOptions } from "@theia/terminal/lib/browser/base/terminal-widget";
 import { RemoteTerminalWidget } from "./terminal-widget/remote-terminal-widget";
+import { RemoteTerminaActiveKeybingContext } from "./contribution/keybinding-context";
 
 export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind)  => {
+    bind(KeybindingContext).to(RemoteTerminaActiveKeybingContext).inSingletonScope();
 
     bind(RemoteTerminalWidget).toSelf();
     unbind(TerminalWidget);
