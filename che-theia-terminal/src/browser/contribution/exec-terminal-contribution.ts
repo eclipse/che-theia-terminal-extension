@@ -41,12 +41,15 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
     private readonly mainMenuId = 'theia:menubar';
 
     registerCommands(registry: CommandRegistry): void {
-        this.termApiEndPointProvider().then(url => {
+        this.termApiEndPointProvider().then(url => { // use await ...
             registry.registerCommand(NewMultiMachineTerminal, {
                 execute: () => {
                     this.terminalQuickOpen.displayListMachines();
                 }
             });
+        }).catch(() => {
+            console.log("use super");
+            super.registerCommands(registry);
         });
     }
 
@@ -72,6 +75,24 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
                     this.shell.addWidget(newMenu, { area: 'top' });
                 }
             });
+        }).catch(() => {
+            super.registerMenus(menus);
+
+            /*
+             TODO: We applied menu contribution to the menu model registry by 'menus.registerMenuAction' above,
+             but after that Theia doesn't redraw menu widget, because Theia already rendered ui with older data
+             and cached old state.
+             So follow we do workaround:
+             find main menu bar widget, destroy it and replace by new one widget with the latest changes.
+            */
+           const widgets = this.shell.getWidgets('top');
+           widgets.forEach(widget => {
+               if (widget.id === this.mainMenuId && widget instanceof MenuBarWidget) {
+                   widget.dispose();
+                   const newMenu = this.mainMenuFactory.createMenuBar();
+                   this.shell.addWidget(newMenu, { area: 'top' });
+               }
+           });
         });
     }
 
@@ -81,6 +102,8 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
                 command: NewMultiMachineTerminal.id,
                 keybinding: 'ctrl+`'
             });
+        }).catch(() => {
+            super.registerKeybindings(keybindings);
         });
     }
 }
