@@ -9,7 +9,7 @@
  **********************************************************************/
 
 import { injectable, inject } from "inversify";
-import { CommandRegistry, MenuModelRegistry, isOSX } from "@theia/core/lib/common";
+import { CommandRegistry, MenuModelRegistry } from "@theia/core/lib/common";
 import { CommonMenus, ApplicationShell, KeybindingRegistry, Key, KeyCode, KeyModifier } from "@theia/core/lib/browser";
 
 import { TerminalQuickOpenService } from "./terminal-quick-open";
@@ -96,8 +96,11 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
         // Alt 0-9
         this.registerRangeKeyBindings(registry, [KeyModifier.Alt], Key.DIGIT0, 9, 'Digit');
 
-        // Ctrl + Space
         this.registerKeyBinding(registry, [KeyModifier.CTRL], Key.SPACE);
+        this.registerKeyBinding(registry, [KeyModifier.CTRL], Key.BRACKET_LEFT);
+        this.registerKeyBinding(registry, [KeyModifier.CTRL], Key.BRACKET_RIGHT);
+        this.registerKeyBinding(registry, [KeyModifier.CTRL], Key.BACKSLASH);
+        this.registerKeyBinding(registry, [KeyModifier.Alt], Key.BACKQUOTE);
     }
 
     private registerRangeKeyBindings(registry: KeybindingRegistry, keyModifiers: KeyModifier[], startKey: Key, offSet: number, codePrefix: string) {
