@@ -47,7 +47,6 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
     options: RemoteTerminalWidgetOptions;
 
     async start(id?: number): Promise<number> {
-        console.log("remote");
         try {
             const termProxyCreator = <TerminalProxyCreator>await this.termProxyCreatorProvider();
             this.termServer = termProxyCreator.create();
