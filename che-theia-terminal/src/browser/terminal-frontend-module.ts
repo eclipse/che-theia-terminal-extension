@@ -9,7 +9,7 @@
  **********************************************************************/
 
 import { ContainerModule, Container, interfaces } from "inversify";
-import { WidgetFactory, WebSocketConnectionProvider, KeybindingContribution } from '@theia/core/lib/browser';
+import { WidgetFactory, WebSocketConnectionProvider } from '@theia/core/lib/browser';
 import { TerminalQuickOpenService } from "./contribution/terminal-quick-open";
 import { RemoteTerminalWidgetOptions, REMOTE_TERMINAL_WIDGET_FACTORY_ID } from "./terminal-widget/remote-terminal-widget";
 import { RemoteWebSocketConnectionProvider } from "./server-definition/remote-connection";
@@ -23,26 +23,16 @@ import {TerminalFrontendContribution} from "@theia/terminal/lib/browser/terminal
 import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
 import { TerminalWidget, TerminalWidgetOptions } from "@theia/terminal/lib/browser/base/terminal-widget";
 import { RemoteTerminalWidget } from "./terminal-widget/remote-terminal-widget";
-import { CommandContribution, MenuContribution } from "@theia/core";
 
 export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind)  => {
 
     bind(RemoteTerminalWidget).toSelf();
-    // unbind(TerminalWidget); ok ?
-    // bind(TerminalWidget).to(RemoteTerminalWidget).inTransientScope();
 
     bind(TerminalQuickOpenService).toSelf().inSingletonScope();
 
     bind(ExecTerminalFrontendContribution).toSelf().inSingletonScope();
 
     rebind(TerminalFrontendContribution).toService(ExecTerminalFrontendContribution);
-
-    // bind(CommandContribution).toService(ExecTerminalFrontendContribution);
-    // bind(MenuContribution).toService(ExecTerminalFrontendContribution);
-    // bind(KeybindingContribution).toService(ExecTerminalFrontendContribution);
-
-    // unbind(TerminalService);
-    // bind(TerminalService).toService(TerminalQuickOpenService);
 
     bind(RemoteWebSocketConnectionProvider).toSelf();
     bind(TerminalProxyCreator).toSelf().inSingletonScope();
@@ -83,7 +73,8 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
                 workspaceService.findTerminalServer().then(server => {
                     if (server) {
                         bind(TerminalWidget).to(RemoteTerminalWidget).inTransientScope();
-                        // rebind(TerminalFrontendContribution).toService(ExecTerminalFrontendContribution);
+                        rebind(TerminalService).toService(TerminalQuickOpenService);
+
                         resolve(server.url);
                     } else {
                         reject("Unable to find che-machine-exec workspace machine.");
