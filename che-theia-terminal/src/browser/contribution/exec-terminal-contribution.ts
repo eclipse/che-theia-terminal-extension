@@ -40,70 +40,56 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
 
     private readonly mainMenuId = 'theia:menubar';
 
-    registerCommands(registry: CommandRegistry): void {
-        this.termApiEndPointProvider().then(url => { // use await ...
+    async registerCommands(registry: CommandRegistry) {
+        const serverUrl = <string | undefined>await this.termApiEndPointProvider();
+        if (serverUrl) {
             registry.registerCommand(NewMultiMachineTerminal, {
                 execute: () => {
                     this.terminalQuickOpen.displayListMachines();
                 }
             });
-        }).catch(() => {
-            console.log("use super");
+        } else {
             super.registerCommands(registry);
-        });
+        }
     }
 
-    registerMenus(menus: MenuModelRegistry): void {
-        this.termApiEndPointProvider().then(url => {
+    async registerMenus(menus: MenuModelRegistry) {
+        const serverUrl = <string | undefined>await this.termApiEndPointProvider();
+        if (serverUrl) {
             menus.registerMenuAction(CommonMenus.FILE, {
                 commandId: NewMultiMachineTerminal.id,
                 label: NewMultiMachineTerminal.label
             });
-
-            /*
-             TODO: We applied menu contribution to the menu model registry by 'menus.registerMenuAction' above,
-             but after that Theia doesn't redraw menu widget, because Theia already rendered ui with older data
-             and cached old state.
-             So follow we do workaround:
-             find main menu bar widget, destroy it and replace by new one widget with the latest changes.
-            */
-            const widgets = this.shell.getWidgets('top');
-            widgets.forEach(widget => {
-                if (widget.id === this.mainMenuId && widget instanceof MenuBarWidget) {
-                    widget.dispose();
-                    const newMenu = this.mainMenuFactory.createMenuBar();
-                    this.shell.addWidget(newMenu, { area: 'top' });
-                }
-            });
-        }).catch(() => {
+        } else {
             super.registerMenus(menus);
+        }
 
-            /*
-             TODO: We applied menu contribution to the menu model registry by 'menus.registerMenuAction' above,
-             but after that Theia doesn't redraw menu widget, because Theia already rendered ui with older data
-             and cached old state.
-             So follow we do workaround:
-             find main menu bar widget, destroy it and replace by new one widget with the latest changes.
-            */
-           const widgets = this.shell.getWidgets('top');
-           widgets.forEach(widget => {
-               if (widget.id === this.mainMenuId && widget instanceof MenuBarWidget) {
-                   widget.dispose();
-                   const newMenu = this.mainMenuFactory.createMenuBar();
-                   this.shell.addWidget(newMenu, { area: 'top' });
-               }
-           });
+        /*
+            TODO: We applied menu contribution to the menu model registry by 'menus.registerMenuAction' above,
+            but after that Theia doesn't redraw menu widget, because Theia already rendered ui with older data
+            and cached old state.
+            So follow we do workaround:
+            find main menu bar widget, destroy it and replace by new one widget with the latest changes.
+        */
+        const widgets = this.shell.getWidgets('top');
+        widgets.forEach(widget => {
+            if (widget.id === this.mainMenuId && widget instanceof MenuBarWidget) {
+                widget.dispose();
+                const newMenu = this.mainMenuFactory.createMenuBar();
+                this.shell.addWidget(newMenu, { area: 'top' });
+            }
         });
     }
 
-    registerKeybindings(keybindings: KeybindingRegistry): void {
-        this.termApiEndPointProvider().then(() => {
+    async registerKeybindings(keybindings: KeybindingRegistry) {
+        const serverUrl = <string | undefined>await this.termApiEndPointProvider();
+        if (serverUrl) {
             keybindings.registerKeybinding({
                 command: NewMultiMachineTerminal.id,
                 keybinding: 'ctrl+`'
             });
-        }).catch(() => {
+        } else {
             super.registerKeybindings(keybindings);
-        });
+        }
     }
 }
