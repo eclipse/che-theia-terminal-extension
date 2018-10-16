@@ -27,16 +27,12 @@ import { RemoteTerminalWidget } from "./terminal-widget/remote-terminal-widget";
 export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind)  => {
 
     bind(RemoteTerminalWidget).toSelf();
-    unbind(TerminalWidget);
-    bind(TerminalWidget).to(RemoteTerminalWidget).inTransientScope();
 
     bind(TerminalQuickOpenService).toSelf().inSingletonScope();
 
     bind(ExecTerminalFrontendContribution).toSelf().inSingletonScope();
-    rebind(TerminalFrontendContribution).toService(ExecTerminalFrontendContribution);
 
-    unbind(TerminalService);
-    bind(TerminalService).toService(TerminalQuickOpenService);
+    rebind(TerminalFrontendContribution).toService(ExecTerminalFrontendContribution);
 
     bind(RemoteWebSocketConnectionProvider).toSelf();
     bind(TerminalProxyCreator).toSelf().inSingletonScope();
@@ -76,13 +72,15 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
 
                 workspaceService.findTerminalServer().then(server => {
                     if (server) {
-                        resolve(server.url);
-                    } else {
-                        reject("Unable to find che-machine-exec workspace machine.");
+                        bind(TerminalWidget).to(RemoteTerminalWidget).inTransientScope();
+                        rebind(TerminalService).toService(TerminalQuickOpenService);
+
+                        return resolve(server.url);
                     }
+                    return resolve(undefined);
                 }).catch(err => {
                     console.error("Failed to get remote terminal server api end point url. Cause: ", err);
-                    reject(err);
+                    resolve(undefined);
                 });
             });
         };
@@ -93,11 +91,14 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
             return new Promise<TerminalProxyCreator>((resolve, reject) => {
                 const provider = context.container.get<TerminalApiEndPointProvider>("TerminalApiEndPointProvider");
                 provider().then(url => {
-                    context.container.bind("term-api-end-point").toConstantValue(url);
-                    resolve(context.container.get(TerminalProxyCreator));
+                    if (url) {
+                        context.container.bind("term-api-end-point").toConstantValue(url);
+                        return resolve(context.container.get(TerminalProxyCreator));
+                    }
+                    return reject("Unabel to find che-machine-exec server.");
                 }).catch(err => {
                     console.log("Failed get terminal proxy. Cause: ", err);
-                    reject(err);
+                    return reject(err);
                 });
             });
         };
