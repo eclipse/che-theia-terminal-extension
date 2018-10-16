@@ -13,7 +13,7 @@ import { RemoteWebSocketConnectionProvider } from "./remote-connection";
 import { RemoteTerminalServer, CONNECT_TERMINAL_SEGMENT } from "./base-terminal-protocol";
 import URI from "@theia/core/lib/common/uri";
 
-export type TerminalApiEndPointProvider = () => Promise<string>;
+export type TerminalApiEndPointProvider = () => Promise<string | undefined>;
 
 export type TerminalProxyCreatorProvider = () => Promise<TerminalProxyCreator>;
 

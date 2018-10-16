@@ -41,49 +41,58 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
 
     private readonly mainMenuId = 'theia:menubar';
 
-    registerCommands(registry: CommandRegistry): void {
-        this.termApiEndPointProvider().then(url => {
+    async registerCommands(registry: CommandRegistry) {
+        const serverUrl = <string | undefined> await this.termApiEndPointProvider();
+        if (serverUrl) {
             registry.registerCommand(NewMultiMachineTerminal, {
                 execute: () => {
                     this.terminalQuickOpen.displayListMachines();
                 }
             });
-        });
+        } else {
+            super.registerCommands(registry);
+        }
     }
 
-    registerMenus(menus: MenuModelRegistry): void {
-        this.termApiEndPointProvider().then(url => {
+    async registerMenus(menus: MenuModelRegistry) {
+        const serverUrl = <string | undefined> await this.termApiEndPointProvider();
+        if (serverUrl) {
             menus.registerMenuAction(CommonMenus.FILE, {
                 commandId: NewMultiMachineTerminal.id,
                 label: NewMultiMachineTerminal.label
             });
+        } else {
+            super.registerMenus(menus);
+        }
 
-            /*
-             TODO: We applied menu contribution to the menu model registry by 'menus.registerMenuAction' above,
-             but after that Theia doesn't redraw menu widget, because Theia already rendered ui with older data
-             and cached old state.
-             So follow we do workaround:
-             find main menu bar widget, destroy it and replace by new one widget with the latest changes.
-            */
-            const widgets = this.shell.getWidgets('top');
-            widgets.forEach(widget => {
-                if (widget.id === this.mainMenuId && widget instanceof MenuBarWidget) {
-                    widget.dispose();
-                    const newMenu = this.mainMenuFactory.createMenuBar();
-                    this.shell.addWidget(newMenu, { area: 'top' });
-                }
-            });
+        /*
+            TODO: We applied menu contribution to the menu model registry by 'menus.registerMenuAction' above,
+            but after that Theia doesn't redraw menu widget, because Theia already rendered ui with older data
+            and cached old state.
+            So follow we do workaround:
+            find main menu bar widget, destroy it and replace by new one widget with the latest changes.
+        */
+        const widgets = this.shell.getWidgets('top');
+        widgets.forEach(widget => {
+            if (widget.id === this.mainMenuId && widget instanceof MenuBarWidget) {
+                widget.dispose();
+                const newMenu = this.mainMenuFactory.createMenuBar();
+                this.shell.addWidget(newMenu, { area: 'top' });
+            }
         });
     }
 
-    registerKeybindings(registry: KeybindingRegistry): void {
-        this.termApiEndPointProvider().then(() => {
+    async registerKeybindings(registry: KeybindingRegistry) {
+        const serverUrl = <string | undefined> await this.termApiEndPointProvider();
+        if (serverUrl) {
             registry.registerKeybinding({
                 command: NewMultiMachineTerminal.id,
                 keybinding: 'ctrl+`'
             });
             this.registerTerminalKeybindings(registry);
-        });
+        } else {
+            super.registerKeybindings(registry);
+        }
     }
 
     private registerTerminalKeybindings(registry: KeybindingRegistry) {
@@ -110,7 +119,6 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
                 keyCode: keyCode,
                 code: codePrefix + String.fromCharCode(keyCode)
             };
-            console.log('Key', key);
             this.registerKeyBinding(registry, keyModifiers, key);
         }
     }
