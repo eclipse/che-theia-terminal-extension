@@ -10,13 +10,14 @@
 
 import { injectable, inject } from "inversify";
 import { CommandRegistry, MenuModelRegistry } from "@theia/core/lib/common";
-import { CommonMenus, ApplicationShell, KeybindingRegistry } from "@theia/core/lib/browser";
+import { CommonMenus, ApplicationShell, KeybindingRegistry, Key, KeyCode, KeyModifier } from "@theia/core/lib/browser";
 
 import { TerminalQuickOpenService } from "./terminal-quick-open";
 import { TerminalFrontendContribution } from "@theia/terminal/lib/browser/terminal-frontend-contribution";
 import { TerminalApiEndPointProvider } from "../server-definition/terminal-proxy-creator";
 import { BrowserMainMenuFactory } from "@theia/core/lib/browser/menu/browser-menu-plugin";
 import { MenuBar as MenuBarWidget } from '@phosphor/widgets';
+import { TerminalKeybindingContext } from "./keybinding-context";
 
 export const NewMultiMachineTerminal = {
     id: 'remote-terminal:new',
@@ -41,7 +42,7 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
     private readonly mainMenuId = 'theia:menubar';
 
     async registerCommands(registry: CommandRegistry) {
-        const serverUrl = <string | undefined>await this.termApiEndPointProvider();
+        const serverUrl = <string | undefined> await this.termApiEndPointProvider();
         if (serverUrl) {
             registry.registerCommand(NewMultiMachineTerminal, {
                 execute: () => {
@@ -54,7 +55,7 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
     }
 
     async registerMenus(menus: MenuModelRegistry) {
-        const serverUrl = <string | undefined>await this.termApiEndPointProvider();
+        const serverUrl = <string | undefined> await this.termApiEndPointProvider();
         if (serverUrl) {
             menus.registerMenuAction(CommonMenus.FILE, {
                 commandId: NewMultiMachineTerminal.id,
@@ -81,15 +82,53 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
         });
     }
 
-    async registerKeybindings(keybindings: KeybindingRegistry) {
-        const serverUrl = <string | undefined>await this.termApiEndPointProvider();
+    async registerKeybindings(registry: KeybindingRegistry) {
+        const serverUrl = <string | undefined> await this.termApiEndPointProvider();
         if (serverUrl) {
-            keybindings.registerKeybinding({
+            registry.registerKeybinding({
                 command: NewMultiMachineTerminal.id,
                 keybinding: 'ctrl+`'
             });
+            this.registerTerminalKeybindings(registry);
         } else {
-            super.registerKeybindings(keybindings);
+            super.registerKeybindings(registry);
         }
+    }
+
+    private registerTerminalKeybindings(registry: KeybindingRegistry) {
+        // Ctrl + a-z
+        this.registerRangeKeyBindings(registry, [KeyModifier.CTRL], Key.KEY_A, 25, 'Key');
+        // Alt + a-z
+        this.registerRangeKeyBindings(registry, [KeyModifier.Alt], Key.KEY_A, 25, 'Key');
+        // Ctrl 0-9
+        this.registerRangeKeyBindings(registry, [KeyModifier.CTRL], Key.DIGIT0, 9, 'Digit');
+        // Alt 0-9
+        this.registerRangeKeyBindings(registry, [KeyModifier.Alt], Key.DIGIT0, 9, 'Digit');
+
+        this.registerKeyBinding(registry, [KeyModifier.CTRL], Key.SPACE);
+        this.registerKeyBinding(registry, [KeyModifier.CTRL], Key.BRACKET_LEFT);
+        this.registerKeyBinding(registry, [KeyModifier.CTRL], Key.BRACKET_RIGHT);
+        this.registerKeyBinding(registry, [KeyModifier.CTRL], Key.BACKSLASH);
+        this.registerKeyBinding(registry, [KeyModifier.Alt], Key.BACKQUOTE);
+    }
+
+    private registerRangeKeyBindings(registry: KeybindingRegistry, keyModifiers: KeyModifier[], startKey: Key, offSet: number, codePrefix: string) {
+        for (let i = 0; i < offSet + 1; i++) {
+            const keyCode = startKey.keyCode + i;
+            const key = {
+                keyCode: keyCode,
+                code: codePrefix + String.fromCharCode(keyCode)
+            };
+            this.registerKeyBinding(registry, keyModifiers, key);
+        }
+    }
+
+    private registerKeyBinding(registry: KeybindingRegistry, keyModifiers: KeyModifier[], key: Key) {
+        const keybinding = KeyCode.createKeyCode({ first: key, modifiers: keyModifiers }).toString();
+        registry.registerKeybinding({
+            command: KeybindingRegistry.PASSTHROUGH_PSEUDO_COMMAND,
+            keybinding: keybinding,
+            context: TerminalKeybindingContext.contextId
+        });
     }
 }
