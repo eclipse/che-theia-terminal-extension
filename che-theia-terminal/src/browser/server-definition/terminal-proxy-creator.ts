@@ -9,8 +9,8 @@
  **********************************************************************/
 
 import { injectable, inject } from "inversify";
-import { RemoteWebSocketConnectionProvider } from "./remote-connection";
-import { RemoteTerminalServer, CONNECT_TERMINAL_SEGMENT } from "./base-terminal-protocol";
+import { RemoteWebSocketConnectionProvider, } from "./remote-connection";
+import { CONNECT_TERMINAL_SEGMENT, RemoteTerminalServerProxy, RemoteTerminalServer } from "./base-terminal-protocol";
 import URI from "@theia/core/lib/common/uri";
 
 export type TerminalApiEndPointProvider = () => Promise<string | undefined>;
@@ -20,18 +20,13 @@ export type TerminalProxyCreatorProvider = () => Promise<TerminalProxyCreator>;
 @injectable()
 export class TerminalProxyCreator {
 
-    private server: RemoteTerminalServer;
-
     constructor(@inject(RemoteWebSocketConnectionProvider) protected readonly connProvider: RemoteWebSocketConnectionProvider,
                 @inject("term-api-end-point") protected readonly apiEndPoint: string,
             ) {
     }
 
-    create(): RemoteTerminalServer  {
-        if (!this.server) {
-            const url = new URI(this.apiEndPoint).resolve(CONNECT_TERMINAL_SEGMENT);
-            this.server = this.connProvider.createProxy<RemoteTerminalServer>(url.toString());
-        }
-        return this.server;
+    create(): RemoteTerminalServerProxy {
+        const url = new URI(this.apiEndPoint).resolve(CONNECT_TERMINAL_SEGMENT);
+        return this.connProvider.createProxy<RemoteTerminalServer>(url.toString());
     }
 }

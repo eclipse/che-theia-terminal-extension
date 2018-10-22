@@ -12,7 +12,7 @@ import { injectable, inject } from "inversify";
 import { TerminalWidgetImpl } from "@theia/terminal/lib/browser/terminal-widget-impl";
 import { IBaseTerminalServer } from "@theia/terminal/lib/common/base-terminal-protocol";
 import { TerminalProxyCreator, TerminalProxyCreatorProvider } from "../server-definition/terminal-proxy-creator";
-import { RemoteTerminalServer, ATTACH_TERMINAL_SEGMENT } from "../server-definition/base-terminal-protocol";
+import { ATTACH_TERMINAL_SEGMENT, RemoteTerminalServerProxy } from "../server-definition/base-terminal-protocol";
 import { RemoteWebSocketConnectionProvider } from "../server-definition/remote-connection";
 import { Deferred } from "@theia/core/lib/common/promise-util";
 import { Disposable } from "vscode-jsonrpc";
@@ -35,7 +35,7 @@ export interface RemoteTerminalWidgetFactoryOptions extends Partial<TerminalWidg
 @injectable()
 export class RemoteTerminalWidget extends TerminalWidgetImpl {
 
-    protected termServer: RemoteTerminalServer;
+    protected termServer: RemoteTerminalServerProxy;
     protected waitForRemoteConnection: Deferred<WebSocket> | undefined;
 
     @inject("TerminalProxyCreatorProvider")
@@ -48,8 +48,18 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
 
     async start(id?: number): Promise<number> {
         try {
-            const termProxyCreator = <TerminalProxyCreator>await this.termProxyCreatorProvider();
-            this.termServer = termProxyCreator.create();
+            if (!this.termServer) {
+                const termProxyCreator = <TerminalProxyCreator>await this.termProxyCreatorProvider();
+                this.termServer = termProxyCreator.create();
+
+                this.toDispose.push(this.termServer.onDidCloseConnection(() => {
+                    const disposable = this.termServer.onDidOpenConnection(() => {
+                        disposable.dispose();
+                        this.reconnectTerminalProcess();
+                    });
+                    this.toDispose.push(disposable);
+                }));
+            }
         } catch (err) {
             throw new Error("Failed to create terminal server proxy. Cause: " + err);
         }
@@ -79,21 +89,29 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
             if (waitForRemoteConnection) {
                 waitForRemoteConnection.resolve(socket);
             }
-            this.term.on('data', socket.send);
-            socket.onmessage = ev => this.term.write(ev.data);
-        };
 
-        socket.onerror = err => {
-            console.error(err);
+            const sendListener = (data) => socket.send(data);
+            this.term.on('data', sendListener);
+            socket.onmessage = ev => this.term.write(ev.data);
+
+            this.toDisposeOnConnect.push(Disposable.create(() => {
+                this.term.off('data', sendListener);
+                socket.close();
+            }));
+
+            socket.onerror = err => {
+                console.error(err);
+            };
+
+            this.toDispose.push(Disposable.create(() => {
+                socket.close();
+            }));
         };
-        this.toDispose.push(Disposable.create(() =>
-            socket.close()
-        ));
     }
 
     protected createWebSocket(pid: string): WebSocket {
         const url = new URI(this.options.endpoint).resolve(ATTACH_TERMINAL_SEGMENT).resolve(this.terminalId + '');
-        return this.remoteWebSocketConnectionProvider.createWebSocket(url.toString());
+        return new WebSocket(url.toString());
     }
 
     protected async attachTerminal(id: number): Promise<number | undefined> {
