@@ -11,6 +11,7 @@
 import { injectable } from "inversify";
 import { TerminalWatcher } from "@theia/terminal/lib/common/terminal-watcher";
 import { IBaseTerminalClient, IBaseTerminalExitEvent, IBaseTerminalErrorEvent } from "@theia/terminal/lib/common/base-terminal-protocol";
+import { JsonRpcProxy } from "@theia/core";
 
 export const TERMINAL_SERVER_TYPE = "terminal";
 export const CONNECT_TERMINAL_SEGMENT = "connect";
@@ -45,6 +46,9 @@ export interface RemoteTerminalServer {
     check(id: IdParam): Promise<number>;
     resize(resizeParam: ResizeParam): Promise<void>;
 }
+
+export const RemoteTerminalServerProxy = Symbol('RemoteTerminalServerProxy');
+export type RemoteTerminalServerProxy = JsonRpcProxy<RemoteTerminalServer>;
 
 /**
  * For now this class it's a stub. Real implementation depends on

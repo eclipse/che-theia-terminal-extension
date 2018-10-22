@@ -24,6 +24,7 @@ import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-servi
 import { TerminalWidget, TerminalWidgetOptions } from "@theia/terminal/lib/browser/base/terminal-widget";
 import { RemoteTerminalWidget } from "./terminal-widget/remote-terminal-widget";
 import { RemoteTerminaActiveKeybingContext } from "./contribution/keybinding-context";
+import { RemoteTerminalServerProxy, RemoteTerminalServer } from "./server-definition/base-terminal-protocol";
 
 export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind)  => {
     bind(KeybindingContext).to(RemoteTerminaActiveKeybingContext).inSingletonScope();
@@ -38,6 +39,8 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
 
     bind(RemoteWebSocketConnectionProvider).toSelf();
     bind(TerminalProxyCreator).toSelf().inSingletonScope();
+
+    bind(RemoteTerminalServer).toService(RemoteTerminalServerProxy);
 
     let terminalNum = 0;
     bind(WidgetFactory).toDynamicValue(ctx => ({
