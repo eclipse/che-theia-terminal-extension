@@ -8,16 +8,16 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-import { injectable, inject } from "inversify";
-import { CommandRegistry, MenuModelRegistry } from "@theia/core/lib/common";
-import { CommonMenus, ApplicationShell, KeybindingRegistry, Key, KeyCode, KeyModifier } from "@theia/core/lib/browser";
+import { injectable, inject } from 'inversify';
+import { CommandRegistry, MenuModelRegistry } from '@theia/core/lib/common';
+import { CommonMenus, ApplicationShell, KeybindingRegistry, Key, KeyCode, KeyModifier } from '@theia/core/lib/browser';
 
-import { TerminalQuickOpenService } from "./terminal-quick-open";
-import { TerminalFrontendContribution } from "@theia/terminal/lib/browser/terminal-frontend-contribution";
-import { TerminalApiEndPointProvider } from "../server-definition/terminal-proxy-creator";
-import { BrowserMainMenuFactory } from "@theia/core/lib/browser/menu/browser-menu-plugin";
+import { TerminalQuickOpenService } from './terminal-quick-open';
+import { TerminalFrontendContribution } from '@theia/terminal/lib/browser/terminal-frontend-contribution';
+import { TerminalApiEndPointProvider } from '../server-definition/terminal-proxy-creator';
+import { BrowserMainMenuFactory } from '@theia/core/lib/browser/menu/browser-menu-plugin';
 import { MenuBar as MenuBarWidget } from '@phosphor/widgets';
-import { TerminalKeybindingContext } from "./keybinding-context";
+import { TerminalKeybindingContext } from './keybinding-context';
 
 export const NewMultiMachineTerminal = {
     id: 'remote-terminal:new',
@@ -30,7 +30,7 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
     @inject(TerminalQuickOpenService)
     private readonly terminalQuickOpen: TerminalQuickOpenService;
 
-    @inject("TerminalApiEndPointProvider")
+    @inject('TerminalApiEndPointProvider')
     protected readonly termApiEndPointProvider: TerminalApiEndPointProvider;
 
     @inject(ApplicationShell)

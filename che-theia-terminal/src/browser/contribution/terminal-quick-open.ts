@@ -8,16 +8,16 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-import { injectable, inject } from "inversify";
+import { injectable, inject } from 'inversify';
 import { QuickOpenService, QuickOpenModel, QuickOpenItem } from '@theia/core/lib/browser/quick-open/';
-import { QuickOpenMode, QuickOpenOptions, WidgetManager, ApplicationShell } from "@theia/core/lib/browser";
+import { QuickOpenMode, QuickOpenOptions, WidgetManager, ApplicationShell } from '@theia/core/lib/browser';
 import { EnvVariablesServer } from '@theia/core/lib/common/env-variables';
-import { REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidgetFactoryOptions } from "../terminal-widget/remote-terminal-widget";
-import {CHEWorkspaceService} from "../../common/workspace-service";
-import {TerminalApiEndPointProvider} from "../server-definition/terminal-proxy-creator";
-import {TerminalService} from "@theia/terminal/lib/browser/base/terminal-service";
-import {TerminalWidget, TerminalWidgetOptions} from "@theia/terminal/lib/browser/base/terminal-widget";
-import { RemoteTerminalWidget } from "../terminal-widget/remote-terminal-widget";
+import { REMOTE_TERMINAL_WIDGET_FACTORY_ID, RemoteTerminalWidgetFactoryOptions } from '../terminal-widget/remote-terminal-widget';
+import {CHEWorkspaceService} from '../../common/workspace-service';
+import {TerminalApiEndPointProvider} from '../server-definition/terminal-proxy-creator';
+import {TerminalService} from '@theia/terminal/lib/browser/base/terminal-service';
+import {TerminalWidget, TerminalWidgetOptions} from '@theia/terminal/lib/browser/base/terminal-widget';
+import { RemoteTerminalWidget } from '../terminal-widget/remote-terminal-widget';
 
 @injectable()
 export class TerminalQuickOpenService implements TerminalService {
@@ -25,7 +25,7 @@ export class TerminalQuickOpenService implements TerminalService {
     constructor(@inject(QuickOpenService) private readonly quickOpenService: QuickOpenService,
         @inject(WidgetManager) private readonly widgetManager: WidgetManager,
         @inject(EnvVariablesServer) protected readonly baseEnvVariablesServer: EnvVariablesServer,
-        @inject("TerminalApiEndPointProvider") protected readonly termApiEndPointProvider: TerminalApiEndPointProvider,
+        @inject('TerminalApiEndPointProvider') protected readonly termApiEndPointProvider: TerminalApiEndPointProvider,
         @inject(CHEWorkspaceService) protected readonly workspaceService: CHEWorkspaceService,
         @inject(ApplicationShell) protected readonly shell: ApplicationShell
     ) {
@@ -44,7 +44,7 @@ export class TerminalQuickOpenService implements TerminalService {
 
         // todo remove rude casting when will be used theia 0.3.16.
         if ((options as any).attributes) {
-            machineName = (options as any).attributes["CHE_MACHINE_NAME"];
+            machineName = (options as any).attributes['CHE_MACHINE_NAME'];
         }
 
         if (!machineName) {
@@ -76,7 +76,7 @@ export class TerminalQuickOpenService implements TerminalService {
             }
         }
 
-        this.open(items, "Select machine to create new terminal");
+        this.open(items, 'Select machine to create new terminal');
     }
 
     private getOpts(placeholder: string, fuzzyMatchLabel: boolean = true): QuickOpenOptions {
@@ -101,7 +101,7 @@ export class TerminalQuickOpenService implements TerminalService {
 
     protected async createNewTerminal(machineName: string, options?: TerminalWidgetOptions): Promise<TerminalWidget> {
         try {
-            const workspaceId = <string>await this.baseEnvVariablesServer.getValue("CHE_WORKSPACE_ID").then(v => v ? v.value : undefined);
+            const workspaceId = <string>await this.baseEnvVariablesServer.getValue('CHE_WORKSPACE_ID').then(v => v ? v.value : undefined);
             const termApiEndPoint = <string>await this.termApiEndPointProvider();
 
             const widget = <RemoteTerminalWidget>await this.widgetManager.getOrCreateWidget(REMOTE_TERMINAL_WIDGET_FACTORY_ID, <RemoteTerminalWidgetFactoryOptions>{
@@ -113,7 +113,7 @@ export class TerminalQuickOpenService implements TerminalService {
             });
             return widget;
         } catch (err) {
-            console.error("Failed to create terminal widget. Cause: ", err);
+            console.error('Failed to create terminal widget. Cause: ', err);
         }
         throw new Error('Unable to create new terminal for machine: ' + machineName);
     }
