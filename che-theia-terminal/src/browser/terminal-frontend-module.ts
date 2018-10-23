@@ -8,23 +8,23 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-import { ContainerModule, Container, interfaces } from "inversify";
+import { ContainerModule, Container, interfaces } from 'inversify';
 import { WidgetFactory, WebSocketConnectionProvider, KeybindingContext } from '@theia/core/lib/browser';
-import { TerminalQuickOpenService } from "./contribution/terminal-quick-open";
-import { RemoteTerminalWidgetOptions, REMOTE_TERMINAL_WIDGET_FACTORY_ID } from "./terminal-widget/remote-terminal-widget";
-import { RemoteWebSocketConnectionProvider } from "./server-definition/remote-connection";
-import { TerminalProxyCreator, TerminalProxyCreatorProvider, TerminalApiEndPointProvider } from "./server-definition/terminal-proxy-creator";
+import { TerminalQuickOpenService } from './contribution/terminal-quick-open';
+import { RemoteTerminalWidgetOptions, REMOTE_TERMINAL_WIDGET_FACTORY_ID } from './terminal-widget/remote-terminal-widget';
+import { RemoteWebSocketConnectionProvider } from './server-definition/remote-connection';
+import { TerminalProxyCreator, TerminalProxyCreatorProvider, TerminalApiEndPointProvider } from './server-definition/terminal-proxy-creator';
 
 import '../../src/browser/terminal-widget/terminal.css';
 import 'xterm/lib/xterm.css';
-import { cheWorkspaceServicePath, CHEWorkspaceService } from "../common/workspace-service";
-import {ExecTerminalFrontendContribution} from "./contribution/exec-terminal-contribution";
-import {TerminalFrontendContribution} from "@theia/terminal/lib/browser/terminal-frontend-contribution";
-import { TerminalService } from "@theia/terminal/lib/browser/base/terminal-service";
-import { TerminalWidget, TerminalWidgetOptions } from "@theia/terminal/lib/browser/base/terminal-widget";
-import { RemoteTerminalWidget } from "./terminal-widget/remote-terminal-widget";
-import { RemoteTerminaActiveKeybingContext } from "./contribution/keybinding-context";
-import { RemoteTerminalServerProxy, RemoteTerminalServer } from "./server-definition/base-terminal-protocol";
+import { cheWorkspaceServicePath, CHEWorkspaceService } from '../common/workspace-service';
+import {ExecTerminalFrontendContribution} from './contribution/exec-terminal-contribution';
+import {TerminalFrontendContribution} from '@theia/terminal/lib/browser/terminal-frontend-contribution';
+import { TerminalService } from '@theia/terminal/lib/browser/base/terminal-service';
+import { TerminalWidget, TerminalWidgetOptions } from '@theia/terminal/lib/browser/base/terminal-widget';
+import { RemoteTerminalWidget } from './terminal-widget/remote-terminal-widget';
+import { RemoteTerminaActiveKeybingContext } from './contribution/keybinding-context';
+import { RemoteTerminalServerProxy, RemoteTerminalServer } from './server-definition/base-terminal-protocol';
 
 export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind)  => {
     bind(KeybindingContext).to(RemoteTerminaActiveKeybingContext).inSingletonScope();
@@ -70,7 +70,7 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
         return provider.createProxy<CHEWorkspaceService>(cheWorkspaceServicePath);
     }).inSingletonScope();
 
-    bind<TerminalApiEndPointProvider>("TerminalApiEndPointProvider").toProvider<string>((context) => {
+    bind<TerminalApiEndPointProvider>('TerminalApiEndPointProvider').toProvider<string>((context) => {
         return () => {
             return new Promise<string>((resolve, reject) => {
                 const workspaceService = context.container.get<CHEWorkspaceService>(CHEWorkspaceService);
@@ -84,25 +84,25 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
                     }
                     return resolve(undefined);
                 }).catch(err => {
-                    console.error("Failed to get remote terminal server api end point url. Cause: ", err);
+                    console.error('Failed to get remote terminal server api end point url. Cause: ', err);
                     resolve(undefined);
                 });
             });
         };
     });
 
-    bind<TerminalProxyCreatorProvider>("TerminalProxyCreatorProvider").toProvider<TerminalProxyCreator>((context) => {
+    bind<TerminalProxyCreatorProvider>('TerminalProxyCreatorProvider').toProvider<TerminalProxyCreator>((context) => {
         return () => {
             return new Promise<TerminalProxyCreator>((resolve, reject) => {
-                const provider = context.container.get<TerminalApiEndPointProvider>("TerminalApiEndPointProvider");
+                const provider = context.container.get<TerminalApiEndPointProvider>('TerminalApiEndPointProvider');
                 provider().then(url => {
                     if (url) {
-                        context.container.bind("term-api-end-point").toConstantValue(url);
+                        context.container.bind('term-api-end-point').toConstantValue(url);
                         return resolve(context.container.get(TerminalProxyCreator));
                     }
-                    return reject("Unabel to find che-machine-exec server.");
+                    return reject('Unabel to find che-machine-exec server.');
                 }).catch(err => {
-                    console.log("Failed get terminal proxy. Cause: ", err);
+                    console.log('Failed get terminal proxy. Cause: ', err);
                     return reject(err);
                 });
             });

@@ -8,19 +8,19 @@
 // Copied from 'terminal-widget.ts' with some modifications, CQ: https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16269
 /* tslint:enable */
 
-import { injectable, inject } from "inversify";
-import { TerminalWidgetImpl } from "@theia/terminal/lib/browser/terminal-widget-impl";
-import { IBaseTerminalServer } from "@theia/terminal/lib/common/base-terminal-protocol";
-import { TerminalProxyCreator, TerminalProxyCreatorProvider } from "../server-definition/terminal-proxy-creator";
-import { ATTACH_TERMINAL_SEGMENT, RemoteTerminalServerProxy } from "../server-definition/base-terminal-protocol";
-import { RemoteWebSocketConnectionProvider } from "../server-definition/remote-connection";
-import { Deferred } from "@theia/core/lib/common/promise-util";
-import { Disposable } from "vscode-jsonrpc";
-import { TerminalWidgetOptions } from "@theia/terminal/lib/browser/base/terminal-widget";
-import URI from "@theia/core/lib/common/uri";
+import { injectable, inject } from 'inversify';
+import { TerminalWidgetImpl } from '@theia/terminal/lib/browser/terminal-widget-impl';
+import { IBaseTerminalServer } from '@theia/terminal/lib/common/base-terminal-protocol';
+import { TerminalProxyCreator, TerminalProxyCreatorProvider } from '../server-definition/terminal-proxy-creator';
+import { ATTACH_TERMINAL_SEGMENT, RemoteTerminalServerProxy } from '../server-definition/base-terminal-protocol';
+import { RemoteWebSocketConnectionProvider } from '../server-definition/remote-connection';
+import { Deferred } from '@theia/core/lib/common/promise-util';
+import { Disposable } from 'vscode-jsonrpc';
+import { TerminalWidgetOptions } from '@theia/terminal/lib/browser/base/terminal-widget';
+import URI from '@theia/core/lib/common/uri';
 
 export const REMOTE_TERMINAL_WIDGET_FACTORY_ID = 'remote-terminal';
-export const RemoteTerminalWidgetOptions = Symbol("RemoteTerminalWidgetOptions");
+export const RemoteTerminalWidgetOptions = Symbol('RemoteTerminalWidgetOptions');
 export interface RemoteTerminalWidgetOptions extends Partial<TerminalWidgetOptions> {
     machineName: string,
     workspaceId: string,
@@ -38,7 +38,7 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
     protected termServer: RemoteTerminalServerProxy;
     protected waitForRemoteConnection: Deferred<WebSocket> | undefined;
 
-    @inject("TerminalProxyCreatorProvider")
+    @inject('TerminalProxyCreatorProvider')
     protected readonly termProxyCreatorProvider: TerminalProxyCreatorProvider;
     @inject(RemoteWebSocketConnectionProvider)
     protected readonly remoteWebSocketConnectionProvider: RemoteWebSocketConnectionProvider;
@@ -61,7 +61,7 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
                 }));
             }
         } catch (err) {
-            throw new Error("Failed to create terminal server proxy. Cause: " + err);
+            throw new Error('Failed to create terminal server proxy. Cause: ' + err);
         }
         this.terminalId = typeof id !== 'number' ? await this.createTerminal() : await this.attachTerminal(id);
         this.resizeTerminalProcess();
@@ -73,7 +73,7 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
     }
 
     protected connectTerminalProcess(): void {
-        if (typeof this.terminalId !== "number") {
+        if (typeof this.terminalId !== 'number') {
             return;
         }
         this.toDisposeOnConnect.dispose();

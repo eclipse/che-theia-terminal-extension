@@ -8,14 +8,14 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-import { injectable, inject } from "inversify";
+import { injectable, inject } from 'inversify';
 import WorkspaceClient, { IRemoteAPI, IWorkspace, IServer, IMachine, IRequestError, IRestAPIConfig } from '@eclipse-che/workspace-client';
 import { EnvVariablesServer } from '@theia/core/lib/common/env-variables';
-import { CHEWorkspaceService } from "../common/workspace-service";
-import { TERMINAL_SERVER_TYPE } from "../browser/server-definition/base-terminal-protocol";
+import { CHEWorkspaceService } from '../common/workspace-service';
+import { TERMINAL_SERVER_TYPE } from '../browser/server-definition/base-terminal-protocol';
 
-const TYPE: string = "type";
-const EDITOR_SERVER_TYPE: string = "ide";
+const TYPE: string = 'type';
+const EDITOR_SERVER_TYPE: string = 'ide';
 
 @injectable()
 export class CHEWorkspaceServiceImpl implements CHEWorkspaceService {
@@ -42,7 +42,7 @@ export class CHEWorkspaceServiceImpl implements CHEWorkspaceService {
                     resolve({});
                 })
                 .catch((reason: IRequestError) => {
-                    console.log("Failed to get workspace by ID: ", workspaceId, "Status code: ", reason.status);
+                    console.log(`Failed to get workspace by ID: ${workspaceId}. Status code: ${reason.status}`);
                     reject(reason.message);
                 });
         });
@@ -108,15 +108,15 @@ export class CHEWorkspaceServiceImpl implements CHEWorkspaceService {
     }
 
     public async getWorkspaceId(): Promise<string | undefined> {
-        return await this.baseEnvVariablesServer.getValue("CHE_WORKSPACE_ID").then(v => v ? v.value : undefined);
+        return await this.baseEnvVariablesServer.getValue('CHE_WORKSPACE_ID').then(v => v ? v.value : undefined);
     }
 
     public async getWsMasterApiEndPoint(): Promise<string | undefined> {
-        return await this.baseEnvVariablesServer.getValue("CHE_API_EXTERNAL").then(v => v ? v.value : undefined);
+        return await this.baseEnvVariablesServer.getValue('CHE_API_EXTERNAL').then(v => v ? v.value : undefined);
     }
 
     private async getMachineToken(): Promise<string> {
-        return await this.baseEnvVariablesServer.getValue("CHE_MACHINE_TOKEN").then(v => v ? v.value : undefined);
+        return await this.baseEnvVariablesServer.getValue('CHE_MACHINE_TOKEN').then(v => v ? v.value : undefined);
     }
 
     private async getRemoteApi(): Promise<IRemoteAPI> {
@@ -126,7 +126,7 @@ export class CHEWorkspaceServiceImpl implements CHEWorkspaceService {
             const restConfig: IRestAPIConfig = {baseUrl: baseUrl, headers: {}};
 
             if (machineToken) {
-                restConfig.headers['Authorization'] = "Bearer " + machineToken;
+                restConfig.headers['Authorization'] = 'Bearer ' + machineToken;
             }
 
             this.api = WorkspaceClient.getRestApi(restConfig);
