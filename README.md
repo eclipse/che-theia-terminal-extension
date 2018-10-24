@@ -4,73 +4,48 @@ Terminal exec extension creates multi-machine terminals for Theia inside Eclipse
 side from repository https://github.com/eclipse/che-machine-exec and client side in the "che-theia-terminal" directory. Server side was written on
 the go-lang and uses docker client to create terminal connection based on docker exec. Current extension it's Theia widget written on the Typescript.
 
-# Getting started
+# How to use/test extension
+Create new Eclipse CHE workspace from on of the Theia stack. If it's workspace next stack enable che-machine-exec plugin. Lauch workspace. When workspace will be started You will see running Theia.
+New multimachine terminal can be created:
 
-Install [nvm](https://github.com/creationix/nvm#install-script).
+1. With help main menu. Open `File => Open new multi-machine-terminal`
+2. With help shortcut. Press ``` Ctrl + ` ```
+3. With help command palette: Type `Ctrl + Shift + P`(for Linux, Windows) or `Command + Shift + P` for Mac. Then type command name 'terminal'. Press Enter.
 
-    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.5/install.sh | bash
+In all three casses you will see dropdown with list machines. Select one of them to create new terminal.
 
-Install npm and node.
+## Development
+It's CHE specific extension, so You should develop this extension inside Eclipse CHE workspace.
+Create new workspace from Theia stack. In case if it's workspace-next stack, enable che-machine-exec plugin.
+Start workspace. Clone extension for developement. To clone extension You can use command pallete command:
+Type `Ctrl + Shift + P`(or `Command + Shift + P` for Mac). To find git clone command type `Git clone`.
+Select 'Git clone...'  command and press enter. Paste to the command pallete input github link and press enter.
 
-    nvm install 8
-    nvm use 8
+Go to extension:
+```
+cd /projects/che-theia-terminal-extension
+```
 
-Install yarn.
+Build extension
+```
+yarn rebuild:browser
+```
 
-    npm install -g yarn
+Launch extension:
+```
+cd browser-app && yarn theia start --port=3030 --hostname=0.0.0.0
+```
 
-## Running the browser example
-
-    yarn rebuild:browser
-    cd browser-app
-    yarn start
-
-Open http://localhost:3000 in the browser.
-
-## Running the Electron example
-
-    yarn rebuild:electron
-    cd electron-app
-    yarn start
-
-## Developing with the browser example
-
-Start watching of the hello world extension.
-
+Start watching of extension:
+```
     cd che-theia-terminal
     yarn watch
+```
 
-Start watching of the browser example.
-
+Start watching of the browser-app.
+```
     yarn rebuild:browser
     cd browser-app
     yarn watch
-
-Launch `Start Browser Backend` configuration from VS code.
-
-Open http://localhost:3000 in the browser.
-
-## Developing with the Electron example
-
-Start watching of the hello world extension.
-
-    cd che-theia-terminal
-    yarn watch
-
-Start watching of the electron example.
-
-    yarn rebuild:electron
-    cd electron-app
-    yarn watch
-
-Launch `Start Electron Backend` configuration from VS code.
-
-## Publishing che-theia-terminal-plugin
-
-Create a npm user and login to the npm registry, [more on npm publishing](https://docs.npmjs.com/getting-started/publishing-npm-packages).
-
-    npm login
-
-Publish packages with lerna to update versions properly across local packages, [more on publishing with lerna](https://github.com/lerna/lerna#publish).
-
-    npx lerna publish
+```
+On the user dashboard you can find server url for port 3030. Open this url in the browser.
