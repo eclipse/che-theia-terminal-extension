@@ -19,9 +19,9 @@ import { BrowserMainMenuFactory } from '@theia/core/lib/browser/menu/browser-men
 import { MenuBar as MenuBarWidget } from '@phosphor/widgets';
 import { TerminalKeybindingContext } from './keybinding-context';
 
-export const NewMultiMachineTerminal = {
-    id: 'remote-terminal:new',
-    label: 'Open new multi-machine terminal'
+export const NewTerminalInSpecificContainer = {
+    id: 'terminal-in-specific-container:new',
+    label: 'Open Terminal in specific container'
 };
 
 @injectable()
@@ -44,7 +44,7 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
     async registerCommands(registry: CommandRegistry) {
         const serverUrl = <string | undefined> await this.termApiEndPointProvider();
         if (serverUrl) {
-            registry.registerCommand(NewMultiMachineTerminal, {
+            registry.registerCommand(NewTerminalInSpecificContainer, {
                 execute: () => {
                     this.terminalQuickOpen.displayListMachines();
                 }
@@ -58,8 +58,8 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
         const serverUrl = <string | undefined> await this.termApiEndPointProvider();
         if (serverUrl) {
             menus.registerMenuAction(CommonMenus.FILE, {
-                commandId: NewMultiMachineTerminal.id,
-                label: NewMultiMachineTerminal.label
+                commandId: NewTerminalInSpecificContainer.id,
+                label: NewTerminalInSpecificContainer.label
             });
         } else {
             super.registerMenus(menus);
@@ -86,7 +86,7 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
         const serverUrl = <string | undefined> await this.termApiEndPointProvider();
         if (serverUrl) {
             registry.registerKeybinding({
-                command: NewMultiMachineTerminal.id,
+                command: NewTerminalInSpecificContainer.id,
                 keybinding: 'ctrl+`'
             });
             this.registerTerminalKeybindings(registry);

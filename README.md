@@ -1,6 +1,6 @@
 # Terminal exec extension
 
-Terminal exec extension creates multi-machine terminals for Theia inside Eclipse CHE workspaces. Extension uses che-machine-exec server
+Terminal exec extension creates terminals in specific containers for Theia inside Eclipse CHE workspaces. Extension uses che-machine-exec server
 side from repository https://github.com/eclipse/che-machine-exec and client side in the "che-theia-terminal" directory. Server side was written on
 the go-lang and uses docker client to create terminal connection based on docker exec. Current extension it's Theia widget written on the Typescript.
 
