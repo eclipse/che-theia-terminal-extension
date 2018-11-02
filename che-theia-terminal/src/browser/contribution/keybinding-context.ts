@@ -13,7 +13,7 @@ import { RemoteTerminalWidget } from '../terminal-widget/remote-terminal-widget'
 import { TerminalActiveContext } from '@theia/terminal/lib/browser/terminal-keybinding-contexts';
 
 export namespace TerminalKeybindingContext {
-    export const contextId = 'multiMachineTerminalContext';
+    export const contextId = 'TerminalInSpecificContainerContext';
 }
 
 @injectable()
