@@ -9,9 +9,9 @@
  **********************************************************************/
 
 import { injectable } from 'inversify';
-import { TerminalWatcher } from '@theia/terminal/lib/common/terminal-watcher';
 import { IBaseTerminalClient, IBaseTerminalExitEvent, IBaseTerminalErrorEvent } from '@theia/terminal/lib/common/base-terminal-protocol';
 import { JsonRpcProxy } from '@theia/core';
+import { Emitter, Event } from '@theia/core/lib/common/event';
 
 export const TERMINAL_SERVER_TYPE = 'terminal';
 export const CONNECT_TERMINAL_SEGMENT = 'connect';
@@ -50,18 +50,34 @@ export interface RemoteTerminalServer {
 export const RemoteTerminalServerProxy = Symbol('RemoteTerminalServerProxy');
 export type RemoteTerminalServerProxy = JsonRpcProxy<RemoteTerminalServer>;
 
-/**
- * For now this class it's a stub. Real implementation depends on
- * https://github.com/eclipse/che-machine-exec/issues/5
- */
 @injectable()
-export class RemoteTerminaWatcher extends TerminalWatcher {
+export class RemoteTerminaWatcher {
+
+    private onRemoteTerminalExitEmitter = new Emitter<IBaseTerminalExitEvent>();
+    private onRemoteTerminalErrorEmitter = new Emitter<IBaseTerminalErrorEvent>();
+
     getTerminalClient(): IBaseTerminalClient {
+
+        const exitEmitter = this.onRemoteTerminalExitEmitter;
+        const errorEmitter = this.onRemoteTerminalErrorEmitter;
+
         return {
             onTerminalExitChanged(event: IBaseTerminalExitEvent) {
+                console.log("OnTerminal exit");
+                exitEmitter.fire(event);
             },
             onTerminalError(event: IBaseTerminalErrorEvent) {
+                console.log("OnTerinalError");
+                errorEmitter.fire(event);
             }
         };
+    }
+
+    get onTerminalExit(): Event<IBaseTerminalExitEvent> {
+        return this.onRemoteTerminalExitEmitter.event;
+    }
+
+    get onTerminalError(): Event<IBaseTerminalErrorEvent> {
+        return this.onRemoteTerminalErrorEmitter.event;
     }
 }
