@@ -46,21 +46,18 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
     @inject(RemoteTerminalWidgetOptions)
     options: RemoteTerminalWidgetOptions;
 
-    @inject(RemoteTerminaWatcher)
-    protected readonly remoteTerminalWatcher: RemoteTerminaWatcher;
-
     @postConstruct()
     protected init(): void {
         super.init();
 
-        this.toDispose.push(this.remoteTerminalWatcher.onTerminalExit(exitEvent => {
+        this.toDispose.push(this.terminalWatcher.onTerminalExit(exitEvent => {
             if ( exitEvent.terminalId === this.terminalId) {
                 console.log("handler exit");
                 this.dispose();
             }
         }));
 
-        this.toDispose.push(this.remoteTerminalWatcher.onTerminalError(errEvent => {
+        this.toDispose.push(this.terminalWatcher.onTerminalError(errEvent => {
             this.logger.error(`Terminal error: ${errEvent.error}`);
         }));
     }

@@ -12,6 +12,7 @@ import { injectable, inject } from 'inversify';
 import { RemoteWebSocketConnectionProvider, } from './remote-connection';
 import { CONNECT_TERMINAL_SEGMENT, RemoteTerminalServerProxy, RemoteTerminalServer, RemoteTerminaWatcher } from './base-terminal-protocol';
 import URI from '@theia/core/lib/common/uri';
+import { TerminalWatcher } from '@theia/terminal/lib/common/terminal-watcher';
 
 export type TerminalApiEndPointProvider = () => Promise<string | undefined>;
 
@@ -22,7 +23,7 @@ export class TerminalProxyCreator {
 
     constructor(@inject(RemoteWebSocketConnectionProvider) protected readonly connProvider: RemoteWebSocketConnectionProvider,
                 @inject('term-api-end-point') protected readonly apiEndPoint: string,
-                @inject(RemoteTerminaWatcher) protected readonly terminalWatcher: RemoteTerminaWatcher,
+                @inject(TerminalWatcher) protected readonly terminalWatcher: RemoteTerminaWatcher,
             ) {
     }
 

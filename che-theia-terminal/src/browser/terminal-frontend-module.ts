@@ -35,8 +35,6 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
 
     bind(ExecTerminalFrontendContribution).toSelf().inSingletonScope();
 
-    bind(RemoteTerminaWatcher).toSelf().inSingletonScope();
-
     rebind(TerminalFrontendContribution).toService(ExecTerminalFrontendContribution);
 
     bind(RemoteWebSocketConnectionProvider).toSelf();
