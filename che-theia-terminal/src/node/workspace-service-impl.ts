@@ -12,7 +12,7 @@ import { injectable, inject } from 'inversify';
 import WorkspaceClient, { IRemoteAPI, IWorkspace, IServer, IMachine, IRequestError, IRestAPIConfig } from '@eclipse-che/workspace-client';
 import { EnvVariablesServer } from '@theia/core/lib/common/env-variables';
 import { CHEWorkspaceService } from '../common/workspace-service';
-import { TERMINAL_SERVER_TYPE } from '../browser/server-definition/base-terminal-protocol';
+import { TERMINAL_SERVER_TYPE } from '../browser/server-definition/remote-terminal-protocol';
 
 const TYPE: string = 'type';
 const EDITOR_SERVER_TYPE: string = 'ide';

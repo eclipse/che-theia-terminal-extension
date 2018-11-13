@@ -50,34 +50,51 @@ export interface RemoteTerminalServer {
 export const RemoteTerminalServerProxy = Symbol('RemoteTerminalServerProxy');
 export type RemoteTerminalServerProxy = JsonRpcProxy<RemoteTerminalServer>;
 
+// Terminal exec exit event
+export class ExecExitEvent {
+    id: number;
+}
+
+// Terminal exec error event
+export class ExecErrorEvent {
+    id: number;
+    stack: string;
+}
+
+// Terminal exec client
+export interface TerminalExecClient {
+    onExecExit(event: ExecExitEvent): void;
+    onExecError(event: ExecErrorEvent): void;
+}
+
 @injectable()
-export class RemoteTerminaWatcher {
+export class RemoteTerminalWatcher {
 
-    private onRemoteTerminalExitEmitter = new Emitter<IBaseTerminalExitEvent>();
-    private onRemoteTerminalErrorEmitter = new Emitter<IBaseTerminalErrorEvent>();
+    private onRemoteTerminalExitEmitter = new Emitter<ExecExitEvent>();
+    private onRemoteTerminalErrorEmitter = new Emitter<ExecErrorEvent>();
 
-    getTerminalClient(): IBaseTerminalClient {
+    getTerminalExecClient(): TerminalExecClient {
 
         const exitEmitter = this.onRemoteTerminalExitEmitter;
         const errorEmitter = this.onRemoteTerminalErrorEmitter;
 
         return {
-            onTerminalExitChanged(event: IBaseTerminalExitEvent) {
+            onExecExit(event: ExecExitEvent) {
                 console.log("OnTerminal exit");
                 exitEmitter.fire(event);
             },
-            onTerminalError(event: IBaseTerminalErrorEvent) {
-                console.log("OnTerinalError");
+            onExecError(event: ExecErrorEvent) {
+                console.log("OnTerminalError");
                 errorEmitter.fire(event);
             }
         };
     }
 
-    get onTerminalExit(): Event<IBaseTerminalExitEvent> {
+    get onTerminalExecExit(): Event<ExecExitEvent> {
         return this.onRemoteTerminalExitEmitter.event;
     }
 
-    get onTerminalError(): Event<IBaseTerminalErrorEvent> {
+    get onTerminalExecError(): Event<ExecErrorEvent> {
         return this.onRemoteTerminalErrorEmitter.event;
     }
 }

@@ -12,7 +12,7 @@ import { injectable, inject, postConstruct } from 'inversify';
 import { TerminalWidgetImpl } from '@theia/terminal/lib/browser/terminal-widget-impl';
 import { IBaseTerminalServer } from '@theia/terminal/lib/common/base-terminal-protocol';
 import { TerminalProxyCreator, TerminalProxyCreatorProvider } from '../server-definition/terminal-proxy-creator';
-import { ATTACH_TERMINAL_SEGMENT, RemoteTerminalServerProxy, RemoteTerminaWatcher } from '../server-definition/base-terminal-protocol';
+import { ATTACH_TERMINAL_SEGMENT, RemoteTerminalServerProxy, RemoteTerminalWatcher } from '../server-definition/remote-terminal-protocol';
 import { RemoteWebSocketConnectionProvider } from '../server-definition/remote-connection';
 import { Deferred } from '@theia/core/lib/common/promise-util';
 import { Disposable } from 'vscode-jsonrpc';
@@ -43,6 +43,9 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
     @inject(RemoteWebSocketConnectionProvider)
     protected readonly remoteWebSocketConnectionProvider: RemoteWebSocketConnectionProvider;
 
+    @inject(RemoteTerminalWatcher)
+    protected readonly remoteTerminalWatcher: RemoteTerminalWatcher;
+
     @inject(RemoteTerminalWidgetOptions)
     options: RemoteTerminalWidgetOptions;
 
@@ -50,15 +53,16 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
     protected init(): void {
         super.init();
 
-        this.toDispose.push(this.terminalWatcher.onTerminalExit(exitEvent => {
-            if ( exitEvent.terminalId === this.terminalId) {
-                console.log("handler exit");
+        this.toDispose.push(this.remoteTerminalWatcher.onTerminalExecExit(exitEvent => {
+            console.log("handler exit");
+            if (exitEvent.id === this.terminalId) {
                 this.dispose();
             }
         }));
 
-        this.toDispose.push(this.terminalWatcher.onTerminalError(errEvent => {
-            this.logger.error(`Terminal error: ${errEvent.error}`);
+        this.toDispose.push(this.remoteTerminalWatcher.onTerminalExecError(errEvent => {
+            this.dispose();
+            this.logger.error(`Terminal error: ${errEvent.stack}`);
         }));
     }
 
