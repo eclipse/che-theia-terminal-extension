@@ -20,6 +20,8 @@ export type TerminalProxyCreatorProvider = () => Promise<TerminalProxyCreator>;
 @injectable()
 export class TerminalProxyCreator {
 
+    private remoteTermServer: RemoteTerminalServerProxy;
+
     constructor(@inject(RemoteWebSocketConnectionProvider) protected readonly connProvider: RemoteWebSocketConnectionProvider,
                 @inject('term-api-end-point') protected readonly apiEndPoint: string,
                 @inject(RemoteTerminalWatcher) protected readonly terminalWatcher: RemoteTerminalWatcher,
@@ -27,7 +29,10 @@ export class TerminalProxyCreator {
     }
 
     create(): RemoteTerminalServerProxy {
-        const url = new URI(this.apiEndPoint).resolve(CONNECT_TERMINAL_SEGMENT);
-        return this.connProvider.createProxy<RemoteTerminalServer>(url.toString(), this.terminalWatcher.getTerminalExecClient());
+        if (!this.remoteTermServer) {
+            const url = new URI(this.apiEndPoint).resolve(CONNECT_TERMINAL_SEGMENT);
+            this.remoteTermServer = this.connProvider.createProxy<RemoteTerminalServer>(url.toString(), this.terminalWatcher.getTerminalExecClient());
+        }
+        return this.remoteTermServer;
     }
 }
