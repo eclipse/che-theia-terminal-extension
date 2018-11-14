@@ -84,6 +84,7 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
 
                         return resolve(server.url);
                     }
+                    return resolve(undefined);
                 }).catch(err => {
                     console.error('Failed to get remote terminal server api end point url. Cause: ', err);
                     resolve(undefined);
