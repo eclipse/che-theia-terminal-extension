@@ -2,7 +2,7 @@
     "compilerOptions": {
         "skipLibCheck": true,
         "experimentalDecorators": true,
-        "noUnusedLocals": false,
+        "noUnusedLocals": true,
         "emitDecoratorMetadata": true,
         "downlevelIteration": true,
         "module": "commonjs",

@@ -54,15 +54,16 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
         super.init();
 
         this.toDispose.push(this.remoteTerminalWatcher.onTerminalExecExit(exitEvent => {
-            console.log("handler exit");
-            if (exitEvent.id === this.terminalId) {
+            if (this.terminalId  === exitEvent.id) {
                 this.dispose();
             }
         }));
 
         this.toDispose.push(this.remoteTerminalWatcher.onTerminalExecError(errEvent => {
-            this.dispose();
-            this.logger.error(`Terminal error: ${errEvent.stack}`);
+            if (this.terminalId === errEvent.id) {
+                this.dispose();
+                this.logger.error(`Terminal error: ${errEvent.stack}`);
+            }
         }));
     }
 

@@ -80,11 +80,9 @@ export class RemoteTerminalWatcher {
 
         return {
             onExecExit(event: ExecExitEvent) {
-                console.log("OnTerminal exit");
                 exitEmitter.fire(event);
             },
             onExecError(event: ExecErrorEvent) {
-                console.log("OnTerminalError");
                 errorEmitter.fire(event);
             }
         };
