@@ -9,7 +9,6 @@
  **********************************************************************/
 
 import { injectable } from 'inversify';
-import { IBaseTerminalClient, IBaseTerminalExitEvent, IBaseTerminalErrorEvent } from '@theia/terminal/lib/common/base-terminal-protocol';
 import { JsonRpcProxy } from '@theia/core';
 import { Emitter, Event } from '@theia/core/lib/common/event';
 
