@@ -127,7 +127,7 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
         const rows = this.term.rows;
         let cmd: string[] = [];
         if (this.options.shellPath) {
-            cmd = [this.options.shellPath, ...this.options.shellArgs || []];
+            cmd = [this.options.shellPath, ...(this.options.shellArgs || [])];
         }
 
         const machineExec = {
