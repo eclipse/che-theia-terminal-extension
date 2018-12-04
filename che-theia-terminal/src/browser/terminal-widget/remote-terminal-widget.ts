@@ -125,13 +125,17 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
     protected async createTerminal(): Promise<number | undefined> {
         const cols = this.term.cols;
         const rows = this.term.rows;
+        let cmd: string[] = [];
+        if (this.options.shellPath) {
+            cmd = [this.options.shellPath, ...this.options.shellArgs || []];
+        }
 
         const machineExec = {
             identifier: {
                 machineName: this.options.machineName,
                 workspaceId: this.options.workspaceId
             },
-            cmd: ["sh"],
+            cmd: cmd,
             cols,
             rows,
             tty: true,
