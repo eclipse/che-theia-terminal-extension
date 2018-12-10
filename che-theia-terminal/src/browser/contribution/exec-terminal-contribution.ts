@@ -10,10 +10,10 @@
 
 import { injectable, inject } from 'inversify';
 import { CommandRegistry, MenuModelRegistry } from '@theia/core/lib/common';
-import { CommonMenus, ApplicationShell, KeybindingRegistry, Key, KeyCode, KeyModifier } from '@theia/core/lib/browser';
+import { ApplicationShell, KeybindingRegistry, Key, KeyCode, KeyModifier } from '@theia/core/lib/browser';
 
 import { TerminalQuickOpenService } from './terminal-quick-open';
-import { TerminalFrontendContribution } from '@theia/terminal/lib/browser/terminal-frontend-contribution';
+import { TerminalFrontendContribution, TerminalMenus } from '@theia/terminal/lib/browser/terminal-frontend-contribution';
 import { TerminalApiEndPointProvider } from '../server-definition/terminal-proxy-creator';
 import { BrowserMainMenuFactory } from '@theia/core/lib/browser/menu/browser-menu-plugin';
 import { MenuBar as MenuBarWidget } from '@phosphor/widgets';
@@ -57,7 +57,8 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
     async registerMenus(menus: MenuModelRegistry) {
         const serverUrl = <string | undefined> await this.termApiEndPointProvider();
         if (serverUrl) {
-            menus.registerMenuAction(CommonMenus.FILE, {
+            menus.registerSubmenu(TerminalMenus.TERMINAL, 'Terminal');
+            menus.registerMenuAction(TerminalMenus.TERMINAL_NEW, {
                 commandId: NewTerminalInSpecificContainer.id,
                 label: NewTerminalInSpecificContainer.label
             });
