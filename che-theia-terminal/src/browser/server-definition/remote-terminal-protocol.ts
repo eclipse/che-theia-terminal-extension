@@ -9,9 +9,8 @@
  **********************************************************************/
 
 import { injectable } from 'inversify';
-import { TerminalWatcher } from '@theia/terminal/lib/common/terminal-watcher';
-import { IBaseTerminalClient, IBaseTerminalExitEvent, IBaseTerminalErrorEvent } from '@theia/terminal/lib/common/base-terminal-protocol';
 import { JsonRpcProxy } from '@theia/core';
+import { Emitter, Event } from '@theia/core/lib/common/event';
 
 export const TERMINAL_SERVER_TYPE = 'terminal';
 export const CONNECT_TERMINAL_SEGMENT = 'connect';
@@ -50,18 +49,49 @@ export interface RemoteTerminalServer {
 export const RemoteTerminalServerProxy = Symbol('RemoteTerminalServerProxy');
 export type RemoteTerminalServerProxy = JsonRpcProxy<RemoteTerminalServer>;
 
-/**
- * For now this class it's a stub. Real implementation depends on
- * https://github.com/eclipse/che-machine-exec/issues/5
- */
+// Terminal exec exit event
+export class ExecExitEvent {
+    id: number;
+}
+
+// Terminal exec error event
+export class ExecErrorEvent {
+    id: number;
+    stack: string;
+}
+
+// Terminal exec client
+export interface TerminalExecClient {
+    onExecExit(event: ExecExitEvent): void;
+    onExecError(event: ExecErrorEvent): void;
+}
+
 @injectable()
-export class RemoteTerminaWatcher extends TerminalWatcher {
-    getTerminalClient(): IBaseTerminalClient {
+export class RemoteTerminalWatcher {
+
+    private onRemoteTerminalExitEmitter = new Emitter<ExecExitEvent>();
+    private onRemoteTerminalErrorEmitter = new Emitter<ExecErrorEvent>();
+
+    getTerminalExecClient(): TerminalExecClient {
+
+        const exitEmitter = this.onRemoteTerminalExitEmitter;
+        const errorEmitter = this.onRemoteTerminalErrorEmitter;
+
         return {
-            onTerminalExitChanged(event: IBaseTerminalExitEvent) {
+            onExecExit(event: ExecExitEvent) {
+                exitEmitter.fire(event);
             },
-            onTerminalError(event: IBaseTerminalErrorEvent) {
+            onExecError(event: ExecErrorEvent) {
+                errorEmitter.fire(event);
             }
         };
+    }
+
+    get onTerminalExecExit(): Event<ExecExitEvent> {
+        return this.onRemoteTerminalExitEmitter.event;
+    }
+
+    get onTerminalExecError(): Event<ExecErrorEvent> {
+        return this.onRemoteTerminalErrorEmitter.event;
     }
 }

@@ -8,11 +8,11 @@
 // Copied from 'terminal-widget.ts' with some modifications, CQ: https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16269
 /* tslint:enable */
 
-import { injectable, inject } from 'inversify';
+import { injectable, inject, postConstruct } from 'inversify';
 import { TerminalWidgetImpl } from '@theia/terminal/lib/browser/terminal-widget-impl';
 import { IBaseTerminalServer } from '@theia/terminal/lib/common/base-terminal-protocol';
 import { TerminalProxyCreator, TerminalProxyCreatorProvider } from '../server-definition/terminal-proxy-creator';
-import { ATTACH_TERMINAL_SEGMENT, RemoteTerminalServerProxy } from '../server-definition/base-terminal-protocol';
+import { ATTACH_TERMINAL_SEGMENT, RemoteTerminalServerProxy, RemoteTerminalWatcher } from '../server-definition/remote-terminal-protocol';
 import { RemoteWebSocketConnectionProvider } from '../server-definition/remote-connection';
 import { Deferred } from '@theia/core/lib/common/promise-util';
 import { Disposable } from 'vscode-jsonrpc';
@@ -43,8 +43,29 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
     @inject(RemoteWebSocketConnectionProvider)
     protected readonly remoteWebSocketConnectionProvider: RemoteWebSocketConnectionProvider;
 
+    @inject(RemoteTerminalWatcher)
+    protected readonly remoteTerminalWatcher: RemoteTerminalWatcher;
+
     @inject(RemoteTerminalWidgetOptions)
     options: RemoteTerminalWidgetOptions;
+
+    @postConstruct()
+    protected init(): void {
+        super.init();
+
+        this.toDispose.push(this.remoteTerminalWatcher.onTerminalExecExit(exitEvent => {
+            if (this.terminalId  === exitEvent.id) {
+                this.dispose();
+            }
+        }));
+
+        this.toDispose.push(this.remoteTerminalWatcher.onTerminalExecError(errEvent => {
+            if (this.terminalId === errEvent.id) {
+                this.dispose();
+                this.logger.error(`Terminal error: ${errEvent.stack}`);
+            }
+        }));
+    }
 
     async start(id?: number): Promise<number> {
         try {

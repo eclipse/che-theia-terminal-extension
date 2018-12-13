@@ -24,7 +24,7 @@ import { TerminalService } from '@theia/terminal/lib/browser/base/terminal-servi
 import { TerminalWidget, TerminalWidgetOptions } from '@theia/terminal/lib/browser/base/terminal-widget';
 import { RemoteTerminalWidget } from './terminal-widget/remote-terminal-widget';
 import { RemoteTerminaActiveKeybingContext } from './contribution/keybinding-context';
-import { RemoteTerminalServerProxy, RemoteTerminalServer } from './server-definition/base-terminal-protocol';
+import { RemoteTerminalServerProxy, RemoteTerminalServer, RemoteTerminalWatcher } from './server-definition/remote-terminal-protocol';
 
 export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Unbind, isBound: interfaces.IsBound, rebind: interfaces.Rebind)  => {
     bind(KeybindingContext).to(RemoteTerminaActiveKeybingContext).inSingletonScope();
@@ -41,6 +41,8 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
     bind(TerminalProxyCreator).toSelf().inSingletonScope();
 
     bind(RemoteTerminalServer).toService(RemoteTerminalServerProxy);
+
+    bind(RemoteTerminalWatcher).toSelf().inSingletonScope();
 
     let terminalNum = 0;
     bind(WidgetFactory).toDynamicValue(ctx => ({
@@ -102,7 +104,7 @@ export default new ContainerModule((bind: interfaces.Bind, unbind: interfaces.Un
                     }
                     return reject('Unabel to find che-machine-exec server.');
                 }).catch(err => {
-                    console.log('Failed get terminal proxy. Cause: ', err);
+                    console.log('Failed to get terminal proxy. Cause: ', err);
                     return reject(err);
                 });
             });
