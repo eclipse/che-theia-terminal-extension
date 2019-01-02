@@ -40,23 +40,42 @@ export class TerminalQuickOpenService implements TerminalService {
     }
 
     async newTerminal(options: TerminalWidgetOptions): Promise<TerminalWidget> {
-        let machineName;
+        let containerName;
 
         // todo remove rude casting when will be used theia 0.3.16.
         if ((options as any).attributes) {
-            machineName = (options as any).attributes['CHE_MACHINE_NAME'];
+            containerName = (options as any).attributes['CHE_MACHINE_NAME'];
         }
 
-        if (!machineName) {
-            machineName = await this.workspaceService.findEditorMachineName();
+        if (!containerName) {
+            containerName = await this.workspaceService.findEditorMachineName();
         }
 
-        if (machineName) {
-            const termWidget = await this.createNewTerminal(machineName, options);
+        if (containerName) {
+            const termWidget = await this.newTerminalPerContainer(containerName, options);
             return termWidget;
         }
 
         throw new Error('Unable to create new terminal widget');
+    }
+
+     public async newTerminalPerContainer(containerName: string, options?: TerminalWidgetOptions): Promise<TerminalWidget> {
+        try {
+            const workspaceId = <string>await this.baseEnvVariablesServer.getValue('CHE_WORKSPACE_ID').then(v => v ? v.value : undefined);
+            const termApiEndPoint = <string>await this.termApiEndPointProvider();
+
+            const widget = <RemoteTerminalWidget>await this.widgetManager.getOrCreateWidget(REMOTE_TERMINAL_WIDGET_FACTORY_ID, <RemoteTerminalWidgetFactoryOptions>{
+                created: new Date().toString(),
+                machineName: containerName,
+                workspaceId: workspaceId,
+                endpoint: termApiEndPoint,
+                ...options
+            });
+            return widget;
+        } catch (err) {
+            console.error('Failed to create terminal widget. Cause: ', err);
+        }
+        throw new Error('Unable to create new terminal for machine: ' + containerName);
     }
 
     async displayListMachines() {
@@ -69,7 +88,7 @@ export class TerminalQuickOpenService implements TerminalService {
                     continue;
                 }
                 items.push(new NewTerminalItem(machineName, async (newTermItemFunc) => {
-                    const termWidget = await this.createNewTerminal(newTermItemFunc.machineName);
+                    const termWidget = await this.newTerminalPerContainer(newTermItemFunc.machineName);
                     this.activateTerminal(termWidget);
                     termWidget.start();
                 }));
@@ -97,25 +116,6 @@ export class TerminalQuickOpenService implements TerminalService {
                 acceptor(Array.isArray(items) ? items : [items]);
             }
         };
-    }
-
-    protected async createNewTerminal(machineName: string, options?: TerminalWidgetOptions): Promise<TerminalWidget> {
-        try {
-            const workspaceId = <string>await this.baseEnvVariablesServer.getValue('CHE_WORKSPACE_ID').then(v => v ? v.value : undefined);
-            const termApiEndPoint = <string>await this.termApiEndPointProvider();
-
-            const widget = <RemoteTerminalWidget>await this.widgetManager.getOrCreateWidget(REMOTE_TERMINAL_WIDGET_FACTORY_ID, <RemoteTerminalWidgetFactoryOptions>{
-                created: new Date().toString(),
-                machineName: machineName,
-                workspaceId: workspaceId,
-                endpoint: termApiEndPoint,
-                ...options
-            });
-            return widget;
-        } catch (err) {
-            console.error('Failed to create terminal widget. Cause: ', err);
-        }
-        throw new Error('Unable to create new terminal for machine: ' + machineName);
     }
 }
 

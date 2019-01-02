@@ -9,7 +9,7 @@
  **********************************************************************/
 
 import { injectable, inject } from 'inversify';
-import { CommandRegistry, MenuModelRegistry } from '@theia/core/lib/common';
+import { CommandRegistry, MenuModelRegistry, Command } from '@theia/core/lib/common';
 import { ApplicationShell, KeybindingRegistry, Key, KeyCode, KeyModifier } from '@theia/core/lib/browser';
 
 import { TerminalQuickOpenService } from './terminal-quick-open';
@@ -18,6 +18,7 @@ import { TerminalApiEndPointProvider } from '../server-definition/terminal-proxy
 import { BrowserMainMenuFactory } from '@theia/core/lib/browser/menu/browser-menu-plugin';
 import { MenuBar as MenuBarWidget } from '@phosphor/widgets';
 import { TerminalKeybindingContext } from './keybinding-context';
+import { CHEWorkspaceService } from '../../common/workspace-service';
 
 export const NewTerminalInSpecificContainer = {
     id: 'terminal-in-specific-container:new',
@@ -39,6 +40,9 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
     @inject(BrowserMainMenuFactory)
     protected readonly mainMenuFactory: BrowserMainMenuFactory;
 
+    @inject(CHEWorkspaceService)
+    protected readonly cheWorkspaceService: CHEWorkspaceService;
+
     private readonly mainMenuId = 'theia:menubar';
 
     async registerCommands(registry: CommandRegistry) {
@@ -49,8 +53,29 @@ export class ExecTerminalFrontendContribution extends TerminalFrontendContributi
                     this.terminalQuickOpen.displayListMachines();
                 }
             });
+            await this.registerTerminalCommandPerContainer(registry);
         } else {
             super.registerCommands(registry);
+        }
+    }
+
+    private async registerTerminalCommandPerContainer(registry: CommandRegistry) {
+        const containers = await this.cheWorkspaceService.getMachineList();
+
+        for (const containerName in containers) {
+            if (containers.hasOwnProperty(containerName)) {
+                const termCommandPerContainer: Command = {
+                    id: "terminal-for-" + containerName + "-container:new",
+                    label: "New terminal for " + containerName // todo Final solution about command labels
+                };
+                registry.registerCommand(termCommandPerContainer, {
+                    execute: async () => {
+                        const termWidget = await this.terminalQuickOpen.newTerminalPerContainer(containerName);
+                        this.terminalQuickOpen.activateTerminal(termWidget);
+                        termWidget.start();
+                    }
+                });
+            }
         }
     }
 
