@@ -9,7 +9,8 @@
  **********************************************************************/
 
 import { injectable, inject } from 'inversify';
-import WorkspaceClient, { IRemoteAPI, IWorkspace, IServer, IMachine, IRequestError, IRestAPIConfig } from '@eclipse-che/workspace-client';
+import WorkspaceClient, { IRemoteAPI, IRequestError, IRestAPIConfig } from '@eclipse-che/workspace-client';
+import { che } from "@eclipse-che/api";
 import { EnvVariablesServer } from '@theia/core/lib/common/env-variables';
 import { CHEWorkspaceService } from '../common/workspace-service';
 import { TERMINAL_SERVER_TYPE } from '../browser/server-definition/remote-terminal-protocol';
@@ -25,16 +26,16 @@ export class CHEWorkspaceServiceImpl implements CHEWorkspaceService {
     constructor(@inject(EnvVariablesServer) protected readonly baseEnvVariablesServer: EnvVariablesServer) {
     }
 
-    public async getMachineList(): Promise<{ [attrName: string]: IMachine }> {
-        const machineNames: { [attrName: string]: IMachine } = {};
+    public async getMachineList(): Promise<{ [attrName: string]: che.workspace.Machine }> {
+        const machineNames: { [attrName: string]: che.workspace.Machine } = {};
         const workspaceId = await this.getWorkspaceId();
         const restClient = await this.getRemoteApi();
         if (!workspaceId || !restClient) {
             return machineNames;
         }
-        return new Promise<{ [attrName: string]: IMachine }>((resolve, reject) => {
-            restClient.getById<IWorkspace>(workspaceId)
-                .then((workspace: IWorkspace) => {
+        return new Promise<{ [attrName: string]: che.workspace.Machine }>((resolve, reject) => {
+            restClient.getById<che.workspace.Workspace>(workspaceId)
+                .then((workspace: che.workspace.Workspace) => {
                     if (workspace.runtime) {
                         resolve(workspace.runtime.machines);
                         return;
@@ -48,7 +49,7 @@ export class CHEWorkspaceServiceImpl implements CHEWorkspaceService {
         });
     }
 
-    public async findTerminalServer(): Promise<IServer | undefined> {
+    public async findTerminalServer(): Promise<che.workspace.Server | undefined> {
         const machines = await this.getMachineList();
 
         for (const machineName in machines) {
@@ -123,7 +124,7 @@ export class CHEWorkspaceServiceImpl implements CHEWorkspaceService {
         if (!this.api) {
             const machineToken = await this.getMachineToken();
             const baseUrl = await this.getWsMasterApiEndPoint();
-            const restConfig: IRestAPIConfig = {baseUrl: baseUrl, headers: {}};
+            const restConfig: IRestAPIConfig = { baseUrl: baseUrl, headers: {} };
 
             if (machineToken) {
                 restConfig.headers['Authorization'] = 'Bearer ' + machineToken;
