@@ -85,8 +85,14 @@ export class RemoteTerminalWidget extends TerminalWidgetImpl {
             throw new Error('Failed to create terminal server proxy. Cause: ' + err);
         }
         this.terminalId = typeof id !== 'number' ? await this.createTerminal() : await this.attachTerminal(id);
-        this.resizeTerminalProcess();
         this.connectTerminalProcess();
+
+        await this.waitForRemoteConnection;
+        // some delay need to attach exec. If we send resize earlier this size will be skiped.
+        setTimeout(async () => {
+            await this.resizeTerminalProcess();
+        }, 100);
+
         if (IBaseTerminalServer.validateId(this.terminalId)) {
             return this.terminalId;
         }
