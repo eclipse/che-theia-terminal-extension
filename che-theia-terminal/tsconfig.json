@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "skipLibCheck": true,
-        "skipDefaultLibCheck": true,
         "experimentalDecorators": true,
         "noUnusedLocals": true,
         "emitDecoratorMetadata": true,
