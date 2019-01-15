@@ -1,3 +1,8 @@
+# Deprecated
+
+This feature has been merged as a plugin in eclipse/che-theia:
+https://github.com/eclipse/che-theia/pull/24/files
+
 # Terminal exec extension
 
 Terminal exec extension creates terminals in specific containers for Theia inside Eclipse CHE workspaces. Extension uses che-machine-exec server
